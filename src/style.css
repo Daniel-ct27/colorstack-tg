@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #07152f;
+  --color-panel: #11284b;
+  --color-line: #29496f;
+  --color-gold: #f1c65c;
+  --color-ink: #eaf1ff;
+  --color-muted: #b4c5e2;
+}
+
+body {
+  background: var(--color-navy);
+  color: var(--color-ink);
+}
+
+.hero {
+  margin: 1.5rem 0 2.5rem;
+  padding: clamp(1.5rem, 6vw, 4.5rem);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: radial-gradient(ellipse at top right, #174477, transparent 70%), var(--color-panel);
+}
+
+.filter {
+  padding: .5rem .85rem;
+  border: 1px solid var(--color-line);
+  border-radius: .4rem;
+  cursor: pointer;
+}
+
+.filter:hover, .filter[aria-pressed="true"] {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.mission {
+  width: 100%;
+  height: 100%;
+  padding: 1.25rem;
+  text-align: left;
+  border: 1px solid var(--color-line);
+  border-radius: .6rem;
+  background: var(--color-panel);
+  cursor: pointer;
+}
+
+.mission:hover {
+  border-color: var(--color-gold);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.briefing {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(32rem, calc(100% - 2rem));
+  padding: 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: .75rem;
+  background: var(--color-panel);
+  color: var(--color-ink);
+}
+
+.briefing::backdrop {
+  background: rgb(2 9 22 / .78);
+}

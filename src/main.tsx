@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { chapters, missionsForChapter, type Chapter } from './missions.ts'
+import { MissingCommit } from './MissingCommit.tsx'
 import './style.css'
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
         <p className="font-mono text-sm text-gold">{selected?.chapter} · Stage {selected?.id}</p>
         <h2 id="briefing-title" className="mt-2 text-2xl font-bold">{selected?.title}</h2>
         <p className="mt-4 leading-relaxed text-muted">{selected?.briefing}</p>
+        {selected?.id === 2 && <MissingCommit />}
         <form method="dialog" className="mt-6">
           <button className="filter" autoFocus>Close briefing</button>
         </form>

@@ -362,3 +362,61 @@ body { background: #131d31; }
   .gateway-match .decision-tiles { margin-inline-start: .65rem; }
   .gateway-match .decision-tiles::before { width: .55rem; inset-inline-start: -.65rem; }
 }
+
+/* Field guide palette */
+:root {
+  --fisk-ink: #091a39;
+  --fisk-royal: #173c83;
+  --fisk-lapis: #295ba6;
+  --fisk-sky: #a9ceff;
+  --fisk-gold: #f6cb66;
+  --fisk-paper: #fff2d5;
+}
+.campus-backdrop { background: #0a1832; }
+.campus-backdrop::before { background: linear-gradient(105deg, #0b1935f5, #163469dc 64%, #0b1e4cd9), url('/art/jubilee-hall.jpg') center 55% / cover; }
+.campus-backdrop::after { background: radial-gradient(circle at var(--light-x, 64%) var(--light-y, 22%), #5993fc52, transparent 36%); }
+.masthead { border-bottom-color: #6182b36e; }
+.identity img { border-radius: .75rem .75rem .75rem .2rem; }
+.masthead .masthead-cases { background: #112850; border-color: #5a81bb; }
+.hero { border-radius: 0 0 2rem .35rem; border-bottom-color: var(--fisk-gold); }
+.hero::after { background: linear-gradient(90deg, #091a39 0%, #0b214bf2 28%, #0e2a62aa 60%, #0b214b29 100%), linear-gradient(0deg, #091a39a3, transparent 55%); }
+.hero-photo { filter: saturate(.87) contrast(1.08); }
+.hero h1 em { color: var(--fisk-gold); }
+.primary-link, .lab-primary { background: var(--fisk-gold); color: #201a13; border: 1px solid #ffe2a0; border-radius: .4rem .8rem .8rem .4rem; box-shadow: 0 3px 0 #9a6928; }
+.primary-link:hover, .lab-primary:hover:not(:disabled) { background: #ffe3a1; }
+.trail-summary { background: linear-gradient(110deg, #152c57 25%, #255298 100%); border-color: #6a92cf; border-radius: .55rem 2rem 2rem .55rem; }
+.trail-progress { background: #10264d; border-color: #557aaf; }
+.trail-ticks span { background: #52739a; }
+.chapter { --chapter-bright: #467dd2; --chapter-deep: #152f5c; border-radius: .55rem 1.6rem 1.6rem .55rem; border-color: #557aabb3; }
+.chapter[aria-labelledby="investigation"] { --chapter-bright: #45a0b6; --chapter-deep: #0d3a50; }
+.chapter[aria-labelledby="recovery"] { --chapter-bright: #8799e8; --chapter-deep: #292f66; }
+.chapter-scene::after { background: linear-gradient(0deg, var(--chapter-deep) 7%, color-mix(in srgb, var(--chapter-deep) 88%, transparent) 49%, transparent 95%); }
+.mission-list { background: #102342; }
+.mission-path .mission { border-radius: .4rem .9rem .9rem .4rem; }
+.mission-path [data-state="current"] { border-color: #c69b56; background: #234e8a; }
+.mission-path [data-state="current"] .stage-number { background: var(--fisk-gold); }
+.mission-path a:hover { background: #2c5286; }
+.chapter-contact { margin-top: .85rem; padding-inline-start: .75rem; border-inline-start: 3px solid var(--chapter-bright); }
+.chapter-contact strong { display: block; color: var(--fisk-paper); font-size: .88rem; }
+.chapter-contact p { margin-top: .15rem; font-size: .87rem; color: #eef3ff; line-height: 1.4; }
+.lab-brief { background: #183b76; border: 1px solid #608ac8; border-top: 3px solid var(--fisk-gold); border-radius: .65rem 1.4rem .65rem .65rem; }
+.scene-note, .stage-lock { background: #172c51; }
+.lab-console { background: #0d2246; border-color: #5279b5; border-radius: 1.25rem .55rem 1.25rem .55rem; box-shadow: 0 14px 35px #040e2a5c; }
+.lab-console-bar { border-bottom-color: #42689f; }
+.lab-console .bg-navy { background: #071932; }
+.lab-console .filter:not([aria-pressed="true"]) { border-color: #577cac; }
+.decision-tile { background: #173761; border-color: #6089c2; }
+.decision-tile[aria-pressed="true"] { background: var(--fisk-paper); border-color: var(--fisk-gold); }
+.gateway-match fieldset { background: radial-gradient(#7ea9e436 1px, transparent 1px) 0 0 / 13px 13px, #142f59; border-color: #6489be; }
+.gateway-match .decision-title { background: #224a82; }
+.schedule-rounds section, .reconcile-card { background: #132f56; border-color: #547bb0; }
+.evidence-board { background: radial-gradient(#ddb58045 1px, transparent 1px) 0 0 / 8px 8px, #453322; }
+.evidence-board li { position: relative; border-radius: .18rem .6rem .18rem .18rem; padding-top: 1.2rem; box-shadow: 0 3px 3px #21130b6e; }
+.evidence-board li::before { content: ""; position: absolute; left: 50%; top: .28rem; width: .46rem; height: .46rem; border-radius: 50%; background: #b95832; box-shadow: 0 2px 2px #3e1d16a0; }
+@media (min-width: 761px) {
+  .evidence-board li:nth-child(2n) { transform: rotate(1deg); }
+  .evidence-board li:nth-child(2n+1) { transform: rotate(-1deg); }
+}
+@media (max-width: 760px) {
+  .hero::after { background: linear-gradient(0deg, #091a39 3%, #0b214be6 52%, #0e2a6259 100%); }
+}

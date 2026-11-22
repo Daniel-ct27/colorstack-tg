@@ -20,6 +20,11 @@ import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
 
+const chapterContacts: Partial<Record<Chapter, { name: string; note: string }>> = {
+  Investigation: { name: 'Nia · Dispatch', note: 'I saved the retries and the handoff notes. Follow the job IDs when the timestamps get messy.' },
+  Recovery: { name: 'Miles · Rehearsal crew', note: 'The room is ready. I’ll hold the public dashboard until your rehearsal clears.' },
+}
+
 function missionUrl(id: number) {
   return `/missions/${String(id).padStart(2, '0')}`
 }
@@ -216,6 +221,7 @@ function App() {
         {progressNotice && <p className="mb-4 text-sm text-muted">{progressNotice}</p>}
         {chapters.filter((name) => chapter === 'All' || name === chapter).map((name) => {
           const scene = chapterScenes[name]
+          const contact = chapterContacts[name]
           return (
             <section className="chapter" key={name} aria-labelledby={scene.image}>
               <div className="chapter-scene">
@@ -224,6 +230,7 @@ function App() {
                   <p className="eyebrow">Chapter {scene.number}</p>
                   <h3 id={scene.image}>{name}</h3>
                   <p>{scene.story}</p>
+                  {contact && <div className="chapter-contact"><strong>{contact.name}</strong><p>{contact.note}</p></div>}
                 </div>
               </div>
               <ol className="mission-list mission-path">

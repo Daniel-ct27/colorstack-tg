@@ -24,6 +24,7 @@ const logs = {
 
 export function ExportTimeline({ solved, onSolve }: { solved: boolean; onSolve: () => void }) {
   const [selected, setSelected] = useState<keyof typeof logs>('Scheduled run')
+  const [compare, setCompare] = useState(false)
   const [source, setSource] = useState(initialConfig)
   const [result, setResult] = useState<ReturnType<typeof checkExport>>()
 
@@ -43,9 +44,21 @@ export function ExportTimeline({ solved, onSolve }: { solved: boolean; onSolve: 
       <div className="lab-console">
         <div className="lab-console-bar"><h3>Export logs</h3></div>
         <div className="timeline-events" role="group" aria-label="Choose a run to inspect">
-          {(Object.keys(logs) as (keyof typeof logs)[]).map((name) => <button key={name} className="filter" type="button" aria-pressed={selected === name} onClick={() => setSelected(name)}>{name}</button>)}
+          {(Object.keys(logs) as (keyof typeof logs)[]).map((name) => <button key={name} className="filter" type="button" aria-pressed={!compare && selected === name} onClick={() => { setSelected(name); setCompare(false) }}>{name}</button>)}
+          <button className="filter" type="button" aria-pressed={compare} onClick={() => setCompare(!compare)}>Compare scheduled vs. retry</button>
         </div>
-        <pre className="mt-4 whitespace-pre-wrap break-words rounded border border-line bg-navy p-3 font-mono text-sm" aria-label={`${selected} log`}>{logs[selected].join('\n')}</pre>
+        {compare ? (
+          <div className="run-comparison">
+            {(['Scheduled run', 'Manual retry'] as const).map((name) => (
+              <section key={name} aria-label={`${name} comparison`}>
+                <h4>{name}</h4>
+                <pre className="whitespace-pre-wrap break-words font-mono text-sm">{logs[name].join('\n')}</pre>
+              </section>
+            ))}
+          </div>
+        ) : (
+          <pre className="mt-4 whitespace-pre-wrap break-words rounded border border-line bg-navy p-3 font-mono text-sm" aria-label={`${selected} log`}>{logs[selected].join('\n')}</pre>
+        )}
         <form className="mt-5" onSubmit={(event) => { event.preventDefault(); verify() }}>
           <label className="block font-semibold" htmlFor="export-config">export.config.json</label>
           <textarea id="export-config" className="mt-2 w-full rounded border border-line bg-navy p-3 font-mono" rows={5} spellCheck={false} value={source} onChange={(event) => { setSource(event.target.value); setResult(undefined) }} />

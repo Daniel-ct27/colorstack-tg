@@ -12,6 +12,11 @@ export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => 
   const [policy, setPolicy] = useState({ retry: '', identity: '', finish: '' })
   const [results, setResults] = useState<ReturnType<typeof rehearseRelay>>()
 
+  const [activeRun, setActiveRun] = useState(0)
+  const [currentEvent, setEvent] = useState(0)
+  const result = results?.[activeRun]
+  const trace = result?.detail.split('\n') ?? []
+
   return (
     <section className="lab-workbench" aria-labelledby="relay-title">
       <div className="lab-brief">
@@ -27,6 +32,8 @@ export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => 
           event.preventDefault()
           const next = rehearseRelay(policy)
           setResults(next)
+          setActiveRun(0)
+          setEvent(0)
           if (next.every(({ passed }) => passed) && !solved) onSolve()
         }}>
           {policyFields.map(({ key, title, choices }) => (
@@ -37,9 +44,26 @@ export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => 
           ))}
           <button className="lab-primary justify-self-start" disabled={!Object.values(policy).every(Boolean)}>Replay the exchange</button>
         </form>
-        <div role="status" className="mt-4 grid gap-2">
-          {results?.map(({ label, passed, detail }) => <div key={label}><strong className={passed ? 'lab-pass' : 'lab-fail'}>{passed ? 'PASS' : 'FAIL'} · {label}</strong><pre className="mt-1 whitespace-pre-wrap text-sm text-muted">{detail}</pre></div>)}
-        </div>
+        {results && result && (
+          <section className="relay-replay" aria-label="Replay messages">
+            <div className="lab-controls" role="group" aria-label="Replay scenario">
+              {results.map(({ label, passed }, index) => (
+                <button className="filter" type="button" key={label} aria-pressed={activeRun === index} onClick={() => { setActiveRun(index); setEvent(0) }}>
+                  {['Normal delivery', 'Lost publish', 'Lost reply'][index]} · {passed ? 'PASS' : 'FAIL'}
+                </button>
+              ))}
+            </div>
+            <div className="relay-event" role="status" aria-atomic="true">
+              <p className="lab-label">Event {currentEvent + 1} of {trace.length}</p>
+              <p>{trace[currentEvent]}</p>
+            </div>
+            <div className="lab-controls">
+              <button className="filter" type="button" disabled={currentEvent === 0} onClick={() => setEvent(currentEvent - 1)}>← Previous event</button>
+              <button className="filter" type="button" disabled={currentEvent === trace.length - 1} onClick={() => setEvent(currentEvent + 1)}>Next event →</button>
+            </div>
+            <details className="lab-hint"><summary>Read the full replay</summary><pre className="mt-2 whitespace-pre-wrap text-sm">{result.detail}</pre></details>
+          </section>
+        )}
       </div>
     </section>
   )

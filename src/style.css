@@ -578,3 +578,16 @@ a.course-stop:hover { background: #32598b65; }
 .runbook-step-controls { display: flex; flex-wrap: wrap; gap: .35rem; }
 .runbook-step-controls .filter { min-width: 2.6rem; padding-inline: .6rem; font-size: .85rem; }
 .evidence-board { scroll-margin-top: 1rem; }
+
+.field-notes { margin-bottom: 1rem; padding: .65rem .85rem; border: 1px solid #6287bd; border-radius: .65rem; background: #163766; }
+.field-notes summary { font-weight: 800; color: #ffe29a; cursor: pointer; }
+.field-notes small { margin-left: .4rem; color: #d3e3fb; font-weight: 500; }
+.field-notes dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(12.5rem, 100%), 1fr)); gap: .6rem 1.1rem; margin-top: .7rem; }
+.field-notes dt { font-weight: 800; color: #f9f3dc; }
+.field-notes dd { margin-top: .12rem; color: #e3edfc; line-height: 1.45; }
+.run-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); gap: .55rem; margin-top: .85rem; }
+.run-comparison section, .relay-event { padding: .7rem; border: 1px solid #5277aa; border-radius: .6rem; background: #0a1933; }
+.run-comparison h4 { margin-bottom: .4rem; color: #ffe29a; font-weight: 800; }
+.relay-replay { margin-top: 1rem; padding-top: .55rem; border-top: 1px solid var(--color-line); }
+.relay-event { margin-top: .65rem; }
+.relay-event p + p { margin-top: .3rem; color: #edf4ff; }

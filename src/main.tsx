@@ -19,6 +19,7 @@ import { FinaleLab } from './FinaleLab.tsx'
 import { GamePopup } from './GamePopup.tsx'
 import { ArenaCast } from './ArenaCast.tsx'
 import { crewCases, crewNames } from './crew-story.ts'
+import { FieldNotes } from './FieldNotes.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -165,6 +166,7 @@ function App() {
                     <div className="arena-content" onSubmitCapture={() => setCrewAction((count) => count + 1)} onClickCapture={(event) => {
                       if (event.target instanceof Element && event.target.closest('[data-crew-action]')) setCrewAction((count) => count + 1)
                     }}>
+                  <FieldNotes stage={mission.id} />
                   {mission.id === 1 ? (
                     <HiddenSystem solved={completed.includes(1) || previewSolved === 1} onSolve={() => recordSolve(1)} />
                   ) : mission.id === 2 ? (

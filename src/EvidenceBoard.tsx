@@ -6,6 +6,8 @@ const clues = [
   { id: 3, name: 'Nightly export diagnosis', detail: 'At 21:42, the exporter read rows, but the nightly query returned records. Reading records and writing the report where the dashboard watches repairs both run modes.' },
   { id: 4, name: 'Gateway field mapping', detail: 'Use the live jobs list, stable dispatch tickets, and phase codes. K2 is queued and Q7 is completed.' },
   { id: 5, name: 'Showcase failure window', detail: 'Run J-61 was complete at 21:39 and incomplete by 21:43. Inspect service activity between those dashboard refreshes.' },
+  { id: 6, name: 'Delivery policy', detail: 'Wait for the commit acknowledgement. Retry after its deadline using the original delivery ID.' },
+  { id: 7, name: 'Restart note', detail: 'Mount snapshot before export.' },
   { id: 8, name: 'Recovery job order', detail: 'Mount the snapshot, rebuild the export, then refresh the dashboard.' },
 ]
 

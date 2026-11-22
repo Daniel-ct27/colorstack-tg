@@ -6,6 +6,8 @@ const hints: Readonly<Partial<Record<number, [string, string]>>> = {
   3: ['Compare the keys the query returns in each run. Which one is the exporter trying to read?', 'Use the key both runs provide. Then compare their working directories and point the exporter to the full path the dashboard watches.'],
   4: ['The first sync makes several fields look identical. Compare the retry against the dispatch notes.', 'Follow D-41 across the retry, then check which list clears at closeout. Use the dispatch notes to interpret K2 and Q7.'],
   5: ['Filter for the run ID from the rehearsal note. Several events share the same time window.', 'Only dashboard records prove what viewers saw. Find the latest complete view before the earliest incomplete one.'],
+  6: ['A receipt and a commit acknowledgement mean different things.', 'Retry after the commit deadline, and reuse the original delivery ID so the receiver recognizes the work.'],
+  7: ['Start with the shape of the outer layer. Are the characters grouped in pairs?', 'Decode the byte pairs, then identify the output by its alphabet. Read the final letters in the other direction.'],
   8: ['Find the job with no prerequisite. It should go first.', 'The export needs a mounted snapshot, and the dashboard needs an exported report.'],
 }
 

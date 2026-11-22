@@ -8,6 +8,8 @@ import { stageStatus } from './progress.ts'
 import { CampusBackdrop } from './CampusBackdrop.tsx'
 import { TrailMascot } from './TrailMascot.tsx'
 import { EvidenceBoard } from './EvidenceBoard.tsx'
+import { ExportTimeline } from './ExportTimeline.tsx'
+import { RecoveryJobs } from './RecoveryJobs.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -95,6 +97,10 @@ function App() {
                     <HiddenSystem solved={completed.includes(1)} onSolve={() => recordSolve(1)} />
                   ) : mission.id === 2 ? (
                     <MissingCommit solved={completed.includes(2)} onSolve={() => recordSolve(2)} progressNotice="" />
+                  ) : mission.id === 3 ? (
+                    <ExportTimeline solved={completed.includes(3)} onSolve={() => recordSolve(3)} />
+                  ) : mission.id === 8 ? (
+                    <RecoveryJobs solved={completed.includes(8)} onSolve={() => recordSolve(8)} />
                   ) : (
                     <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
                   )}

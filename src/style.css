@@ -238,3 +238,8 @@ body { background: #131d31; }
   .case-unlock[data-new="true"] .case-stamp { animation: case-stamp .42s ease-out both; }
 }
 @keyframes case-stamp { from { transform: scale(1.25) rotate(-8deg); opacity: .25; } to { transform: scale(1); opacity: 1; } }
+
+.timeline-events { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.dependency-jobs { display: grid; gap: .55rem; margin-top: .8rem; }
+.dependency-jobs li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: .55rem; align-items: center; padding: .55rem; border: 1px solid var(--color-line); border-radius: .6rem; background: #293a57; }
+.dependency-jobs li > span { color: var(--color-gold); font-weight: 700; }

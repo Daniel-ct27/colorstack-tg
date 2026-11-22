@@ -300,3 +300,15 @@ body { background: #131d31; }
 .reconcile-queue { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
 .reconcile-queue button[data-routed="true"]:not([aria-pressed="true"]) { border-color: #72b598; }
 .reconcile-card { margin-block: .85rem; border: 1px solid #496589; padding: .8rem; border-radius: .7rem; background: #142643; }
+
+.schedule-tray { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; margin-block: .85rem; }
+.schedule-tray .decision-tile { width: 100%; height: 100%; text-align: left; }
+.schedule-tray small { display: block; line-height: 1.3; margin-top: .2rem; }
+.schedule-selection { margin-block: .75rem; color: var(--color-muted); }
+.schedule-rounds { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: .55rem; }
+.schedule-rounds section { display: flex; flex-direction: column; align-items: stretch; gap: .35rem; padding: .7rem; border: 1px solid #465e85; border-radius: .65rem; background: #172b46; }
+.schedule-rounds h4 { font-weight: 800; color: var(--color-gold); }
+.schedule-rounds ul { flex: 1; font-size: .82rem; }
+.schedule-rounds li { margin-bottom: .3rem; border-radius: .3rem; padding: .25rem; background: #243b5d; }
+.schedule-rounds .filter { font-size: .8rem; }
+@media (max-width: 440px) { .schedule-tray { grid-template-columns: 1fr; } }

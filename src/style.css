@@ -501,8 +501,6 @@ a.course-stop:hover { background: #32598b65; }
 /* Animated arena cast */
 .arena-floor { display: grid; align-items: start; gap: .95rem; }
 .arena-content { min-width: 0; }
-.arena-cast { min-width: 0; border: 1px solid #8795c6; border-radius: 1rem .45rem 1rem .45rem; background: #211f46; overflow: hidden; box-shadow: 0 .25rem 0 #09172f; }
-.cast-stage { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .25rem; padding: .5rem .4rem .35rem; }
 .cast-member { --spot: #ceb8f4; --sheet: url('/art/cast-nia.png'); min-width: 0; display: grid; justify-items: center; align-content: end; gap: .16rem; border-radius: .45rem; padding: .12rem .15rem .3rem; cursor: pointer; background: radial-gradient(ellipse at 50% 58%, var(--spot) 0%, transparent 64%); }
 .cast-member[data-sprite="miles"] { --spot: #77dcb7; --sheet: url('/art/cast-miles.png'); }
 .cast-member[data-sprite="giblet"] { --spot: #fbb371; --sheet: url('/art/cast-giblet.png'); }
@@ -523,6 +521,36 @@ a.course-stop:hover { background: #32598b65; }
 @media (min-width: 1220px) {
   .arena-floor { grid-template-columns: minmax(0, 1fr) clamp(11rem, 17vw, 14rem); }
   .arena-content .lab-workbench { grid-template-columns: minmax(11.5rem, .85fr) minmax(0, 2fr); }
-  .cast-stage { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
 }
-@media (max-width: 1219px) { .arena-cast { grid-row: 1; } }
+
+/* Characters have separate stations around the arena. */
+.arena-floor.cast-around {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: "nia miles" "work work" "giblet bulldog";
+}
+.cast-around .arena-content { grid-area: work; }
+.cast-station { min-width: 0; display: grid; align-content: start; justify-items: center; }
+.cast-station[data-station="nia"] { grid-area: nia; }
+.cast-station[data-station="miles"] { grid-area: miles; }
+.cast-station[data-station="giblet"] { grid-area: giblet; }
+.cast-station[data-station="bulldog"] { grid-area: bulldog; }
+.cast-station .cast-member { width: min(100%, 10rem); }
+.cast-station .cast-role { color: #d4e2fc; font-size: .7rem; line-height: 1.1; }
+.cast-station .cast-dialogue { min-height: 0; margin-top: .4rem; width: 100%; border: 1px solid #716ba6; border-radius: .75rem .75rem .75rem .15rem; text-align: start; overflow-wrap: anywhere; }
+.cast-station[data-station="miles"] .cast-dialogue { border-color: #619084; background: #153c42; }
+.cast-station[data-station="giblet"] .cast-dialogue { border-color: #a77655; background: #553733; }
+.cast-station[data-station="bulldog"] .cast-dialogue { border-color: #648fc0; background: #213e67; }
+.cast-noise { color: #ffe09a; }
+@media (min-width: 1220px) {
+  .arena-floor.cast-around {
+    grid-template-columns: minmax(8.75rem, 12.5%) minmax(0, 1fr) minmax(8.75rem, 12.5%);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "nia work miles" "giblet work bulldog";
+  }
+  .cast-station[data-station="miles"] { margin-top: 1.8rem; }
+  .cast-station[data-station="giblet"], .cast-station[data-station="bulldog"] { margin-top: .8rem; }
+}
+@media (max-width: 620px) {
+  .cast-station .cast-sprite { width: min(3.5rem, 100%); }
+  .cast-station .cast-dialogue { font-size: .74rem; }
+}

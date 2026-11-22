@@ -161,7 +161,7 @@ function App() {
                 </div>
               ) : (
                 <>
-                  <div className="arena-floor">
+                  <ArenaCast stage={mission.id} actionCount={crewAction}>
                     <div className="arena-content" onSubmitCapture={() => setCrewAction((count) => count + 1)} onClickCapture={(event) => {
                       if (event.target instanceof Element && event.target.closest('[data-crew-action]')) setCrewAction((count) => count + 1)
                     }}>
@@ -189,8 +189,7 @@ function App() {
                     <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
                   )}
                     </div>
-                    <ArenaCast stage={mission.id} actionCount={crewAction} />
-                  </div>
+                  </ArenaCast>
                   {previewSolved === mission.id && <p className="mt-4 text-sm text-gold">Playtest solve verified. Campaign progress is unchanged.</p>}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
                   {stageStatus(mission.id, completed) === 'complete' && (justSolved !== mission.id || revealedSolve === mission.id) && !progressNotice && (

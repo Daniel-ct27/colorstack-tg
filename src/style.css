@@ -168,37 +168,37 @@ body { background: radial-gradient(ellipse at top right, #232346, transparent 42
 .hero-photo { filter: saturate(.85) brightness(.9); }
 .chapter-scene::after { background: linear-gradient(0deg, #101b32 8%, #101b32d9 38%, #141a3722 90%); }
 
-body { background: #171920; }
+body { background: #131d31; }
 #root { position: relative; isolation: isolate; }
-.campus-backdrop { position: fixed; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; background: radial-gradient(ellipse at 8% 0%, #483226 0%, transparent 48%), radial-gradient(ellipse at 100% 65%, #29283f, transparent 70%), #191c25; }
+.campus-backdrop { position: fixed; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; background: radial-gradient(ellipse at 8% 0%, #1e3b62 0%, transparent 48%), radial-gradient(ellipse at 100% 65%, #2b304f, transparent 70%), #131e31; }
 .campus-backdrop::before, .campus-backdrop::after { content: ""; position: absolute; inset: 0; }
 .campus-backdrop::before {
   inset: -2rem;
-  background: linear-gradient(100deg, #1b1c26eb, #29253ad1 55%, #302335b8), url('/art/jubilee-hall.jpg') center 55% / cover;
+  background: linear-gradient(100deg, #101c31eb, #1e3151d1 55%, #252b4bb8), url('/art/jubilee-hall.jpg') center 55% / cover;
   opacity: .74;
   transform: translate3d(var(--drift-x, 0), var(--drift-y, 0), 0);
 }
 .campus-backdrop::after {
-  background: radial-gradient(circle at var(--light-x, 64%) var(--light-y, 22%), #ffae6369, #b26f4c2e 17%, transparent 44%),
+  background: radial-gradient(circle at var(--light-x, 64%) var(--light-y, 22%), #eeb67640, #5876ab38 21%, transparent 44%),
     radial-gradient(circle, #ffe2bd1f 1px, transparent 1px) 0 0 / 21px 21px,
     linear-gradient(0deg, #121823bd, transparent 75%);
 }
-.trail-summary { background: radial-gradient(ellipse at top right, #503647, transparent 74%), #282a3a; }
-.mission-list { background: #222634; }
-.masthead { border-color: #524450; }
+.trail-summary { background: radial-gradient(ellipse at top right, #324c76, transparent 74%), #1b2c47; }
+.mission-list { background: #1b2941; }
+.masthead { border-color: #3c4d6c; }
 .eyebrow { color: #ffdda4; }
 @media (prefers-reduced-motion: no-preference) {
   .campus-backdrop::before { transition: transform 420ms cubic-bezier(.2,.65,.25,1); }
 }
 
-/* Warm surfaces and the Thanksgiving mascot */
-.lab-brief, .scene-note, .stage-lock { background: linear-gradient(145deg, #413042, #292638 74%); border-color: #665160; border-top-color: #eab46a; }
-.lab-console, .trail-progress { background: #242531; border-color: #655668; }
-.lab-console .bg-navy { background: #191a22; }
-.lab-console-bar, .lab-rules li { border-color: #625363; }
-.mission-path [data-state="current"] { background: #443344; border-color: #a57950; }
-.mission-path a:hover { background: #4d3846; }
-.mission-path .stage-number { background: #242531; }
+/* Mission surfaces and the Thanksgiving mascot */
+.lab-brief, .scene-note, .stage-lock { background: linear-gradient(145deg, #263d61, #202c45 74%); border-color: #4a5d7b; border-top-color: #eab46a; }
+.lab-console, .trail-progress { background: #202c43; border-color: #4b5d7b; }
+.lab-console .bg-navy { background: #111b2d; }
+.lab-console-bar, .lab-rules li { border-color: #445775; }
+.mission-path [data-state="current"] { background: #2b4166; border-color: #a57950; }
+.mission-path a:hover { background: #32496d; }
+.mission-path .stage-number { background: #202c43; }
 .mission-path [data-state="current"] .stage-number { background: var(--color-gold); }
 .trail-mascot { display: flex; flex-direction: column; align-items: end; position: fixed; z-index: 10; right: clamp(.75rem, 2vw, 1.5rem); bottom: max(.75rem, env(safe-area-inset-bottom)); pointer-events: none; }
 .mascot-toggle { display: grid; place-items: center; width: 3.35rem; height: 3.35rem; border: 1px solid #cca06a; border-radius: 50%; background: #352631; box-shadow: 0 4px 12px #120b1680; cursor: pointer; pointer-events: auto; }

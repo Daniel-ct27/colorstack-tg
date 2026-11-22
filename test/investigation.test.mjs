@@ -4,9 +4,9 @@ import { rehearseRelay } from '../src/relay.ts'
 import { decodeLayer, restartNote, sealedNote } from '../src/encoding.ts'
 
 test('relay recovery handles missing data and an acknowledgement lost after a write', () => {
-  const policy = { retry: 'timeout', identity: 'reuse', finish: 'commit' }
+  const policy = { retry: 'timeout', identity: 'reuse', finish: 'commit', timeoutTicks: '4' }
   assert.ok(rehearseRelay(policy).every(({ passed }) => passed))
-  assert.deepEqual(rehearseRelay({ ...policy, identity: 'rotate' }).map(({ passed }) => passed), [true, true, false])
+  assert.deepEqual(rehearseRelay({ ...policy, identity: 'rotate' }).map(({ passed }) => passed), [true, true, false, true])
   assert.equal(rehearseRelay({ ...policy, finish: 'receipt' })[0].passed, false)
 })
 
@@ -16,4 +16,12 @@ test('the archive note must be decoded from the outer format inward', () => {
   assert.notEqual(base64, restartNote)
   assert.equal(decodeLayer(base64, 'reverse'), restartNote)
   assert.throws(() => decodeLayer(base64, 'hex'))
+})
+
+test('a short deadline retries a healthy write and a long one misses the recovery window', () => {
+  const policy = { retry: 'timeout', identity: 'reuse', finish: 'commit' }
+  assert.match(rehearseRelay({ ...policy, timeoutTicks: '2' })[3].detail, /still running/)
+  assert.equal(rehearseRelay({ ...policy, timeoutTicks: '2' })[3].passed, false)
+  assert.match(rehearseRelay({ ...policy, timeoutTicks: '8' })[1].detail, /cutoff/)
+  assert.equal(rehearseRelay({ ...policy, timeoutTicks: '8' })[1].passed, false)
 })

@@ -5,11 +5,12 @@ import { rehearseRelay } from './relay.ts'
 const policyFields = [
   { key: 'retry', title: 'When do you retry?', choices: [['receipt', 'Immediately after receipt'], ['timeout', 'When the commit deadline expires'], ['never', 'Never retry']] },
   { key: 'identity', title: 'Which delivery ID does a retry use?', choices: [['rotate', 'A new delivery ID'], ['reuse', 'The original delivery ID']] },
+  { key: 'timeoutTicks', title: 'How long is the commit deadline?', choices: [['2', '2 ticks'], ['4', '4 ticks'], ['8', '8 ticks']] },
   { key: 'finish', title: 'When is the report delivered?', choices: [['commit', 'After COMMITTED'], ['receipt', 'After RECEIVED']] },
 ] as const
 
 export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => void }) {
-  const [policy, setPolicy] = useState({ retry: '', identity: '', finish: '' })
+  const [policy, setPolicy] = useState({ retry: '', identity: '', finish: '', timeoutTicks: '' })
   const [results, setResults] = useState<ReturnType<typeof rehearseRelay>>()
 
   const [activeRun, setActiveRun] = useState(0)
@@ -24,7 +25,8 @@ export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => 
         <h2 id="relay-title">Deliver exactly one report.</h2>
         <p className="lab-lede">The exporter sends a report and waits for the dashboard. A message can disappear in either direction. Repair the sender policy so a retry recovers a missing report without duplicating an existing one.</p>
         <details className="lab-hint" open><summary>Recorded exchange · 21:41–21:43</summary><pre className="mt-3 whitespace-pre-wrap font-mono text-sm">{'Exporter → Dashboard  PUBLISH id=R-61\nDashboard → Exporter  RECEIVED id=R-61\nDashboard             write report\nDashboard → Exporter  COMMITTED id=R-61 [lost]'}</pre></details>
-        <details className="lab-hint"><summary>Receiver contract</summary><p>RECEIVED means work started. COMMITTED means the write is durable. A repeat delivery ID returns the stored outcome without writing again.</p></details>
+        <details className="lab-hint"><summary>Receiver contract</summary><p>RECEIVED means work started. COMMITTED means the write is durable. The receiver tracks writes by delivery ID.</p></details>
+        <details className="lab-hint"><summary>Shift clock</summary><p>A healthy write can take three ticks. A retry must start by tick five to make the showcase window. A tick is one simulated unit of time.</p></details>
       </div>
       <div className="lab-console">
         <div className="lab-console-bar"><h3>Sender policy</h3></div>
@@ -49,7 +51,7 @@ export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => 
             <div className="lab-controls" role="group" aria-label="Replay scenario">
               {results.map(({ label, passed }, index) => (
                 <button className="filter" type="button" key={label} aria-pressed={activeRun === index} onClick={() => { setActiveRun(index); setEvent(0) }}>
-                  {['Normal delivery', 'Lost publish', 'Lost reply'][index]} · {passed ? 'PASS' : 'FAIL'}
+                  {['Normal delivery', 'Lost publish', 'Lost reply', 'Slow write'][index]} · {passed ? 'PASS' : 'FAIL'}
                 </button>
               ))}
             </div>

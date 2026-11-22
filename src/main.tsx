@@ -4,11 +4,30 @@ import { chapters, missionsForChapter, type Chapter } from './missions.ts'
 import { MissingCommit } from './MissingCommit.tsx'
 import './style.css'
 
+const progressKey = 'colorstack-code-hunt:missing-commit'
+
 function App() {
   const [chapter, setChapter] = useState<Chapter | 'All'>('All')
   const [selected, setSelected] = useState<ReturnType<typeof missionsForChapter>[number]>()
+  const [missingCommitSolved, setMissingCommitSolved] = useState(() => {
+    try {
+      return localStorage.getItem(progressKey) === 'solved'
+    } catch {
+      return false
+    }
+  })
+  const [progressNotice, setProgressNotice] = useState('')
   const dialog = useRef<HTMLDialogElement>(null)
   const displayed = missionsForChapter(chapter)
+
+  function recordMissingCommitSolve() {
+    setMissingCommitSolved(true)
+    try {
+      localStorage.setItem(progressKey, 'solved')
+    } catch {
+      setProgressNotice('Browser storage is unavailable. This solve lasts until you reload the page.')
+    }
+  }
 
   useLayoutEffect(() => {
     if (selected) dialog.current?.showModal()
@@ -38,6 +57,7 @@ function App() {
           ))}
         </div>
         <p className="mb-4 text-sm text-muted" role="status">{displayed.length} mission briefings</p>
+        {progressNotice && <p className="mb-4 text-sm text-muted">{progressNotice}</p>}
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {displayed.map((mission) => (
             <li key={mission.id}>
@@ -45,7 +65,9 @@ function App() {
                 <span className="font-mono text-sm text-gold">Stage {String(mission.id).padStart(2, '0')} · {mission.chapter}</span>
                 <span className="mt-2 block text-xl font-bold">{mission.title}</span>
                 <span className="mt-1 block text-sm text-muted">{mission.focus}</span>
-                <span className="mt-5 block text-sm font-semibold text-gold">View briefing <span aria-hidden="true">↗</span></span>
+                <span className="mt-5 block text-sm font-semibold text-gold">
+                  {mission.id === 2 && missingCommitSolved ? 'Solved · View briefing' : 'View briefing'} <span aria-hidden="true">↗</span>
+                </span>
               </button>
             </li>
           ))}
@@ -56,7 +78,7 @@ function App() {
         <p className="font-mono text-sm text-gold">{selected?.chapter} · Stage {selected?.id}</p>
         <h2 id="briefing-title" className="mt-2 text-2xl font-bold">{selected?.title}</h2>
         <p className="mt-4 leading-relaxed text-muted">{selected?.briefing}</p>
-        {selected?.id === 2 && <MissingCommit />}
+        {selected?.id === 2 && <MissingCommit solved={missingCommitSolved} onSolve={recordMissingCommitSolve} progressNotice={progressNotice} />}
         <form method="dialog" className="mt-6">
           <button className="filter" autoFocus>Close briefing</button>
         </form>

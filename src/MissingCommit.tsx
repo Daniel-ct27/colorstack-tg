@@ -1,13 +1,21 @@
 import { useState, type FormEvent } from 'react'
 import { matchesCommit, repositoryHistory } from './missing-commit.ts'
 
-export function MissingCommit() {
+interface MissingCommitProps {
+  solved: boolean
+  onSolve: () => void
+  progressNotice: string
+}
+
+export function MissingCommit({ solved, onSolve, progressNotice }: MissingCommitProps) {
   const [answer, setAnswer] = useState('')
-  const [result, setResult] = useState<'correct' | 'incorrect'>()
+  const [incorrect, setIncorrect] = useState(false)
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setResult(matchesCommit(answer) ? 'correct' : 'incorrect')
+    if (solved) return
+    if (matchesCommit(answer)) onSolve()
+    else setIncorrect(true)
   }
 
   return (
@@ -30,13 +38,14 @@ export function MissingCommit() {
         <div className="mt-2 flex flex-wrap gap-2">
           <input id="commit-hash" className="min-w-0 flex-1 rounded-md border border-line bg-navy px-3 py-2 font-mono" value={answer} onChange={(event) => {
             setAnswer(event.target.value)
-            setResult(undefined)
-          }} required autoComplete="off" spellCheck={false} />
-          <button className="filter" type="submit">Check answer</button>
+            setIncorrect(false)
+          }} required autoComplete="off" spellCheck={false} disabled={solved} />
+          <button className="filter" type="submit" disabled={solved}>Check answer</button>
         </div>
         <p className="mt-2 text-sm text-gold" role="status">
-          {result === 'correct' && 'Solved. This change filtered the report to completed jobs.'}
-          {result === 'incorrect' && 'Try again. Look for the change that controls which statuses the report includes.'}
+          {solved && 'Solved. This change filtered the report to completed jobs.'}
+          {incorrect && !solved && 'Try again. Look for the change that controls which statuses the report includes.'}
+          {progressNotice && <span className="mt-1 block text-muted">{progressNotice}</span>}
         </p>
       </form>
     </section>

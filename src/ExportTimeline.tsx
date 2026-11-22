@@ -27,13 +27,15 @@ export function ExportTimeline({ solved, onSolve }: { solved: boolean; onSolve: 
           <div className="mt-4">
             <h4 className="font-bold">{log[selected].event}</h4>
             <p className="mt-2 text-muted">{log[selected].detail}</p>
-            <button className="lab-primary mt-4" type="button" disabled={solved} onClick={() => {
-              if (selected === 2) onSolve()
-              else setFeedback('That event isn’t the first sign of trouble. Compare it with the events right before and after it.')
+            <button className="lab-primary mt-4" type="button" onClick={() => {
+              if (selected === 2) {
+                setFeedback(solved ? 'Correct. This case is already solved.' : 'Failure located. Timestamp pinned to the evidence board.')
+                if (!solved) onSolve()
+              } else { setFeedback('That event isn’t the first sign of trouble. Compare it with the events right before and after it.') }
             }}>Flag this event</button>
           </div>
         )}
-        <p className="lab-result" role="status">{solved ? 'Failure located. Timestamp pinned to the evidence board.' : feedback}</p>
+        <p className="lab-result" role="status">{feedback}</p>
       </div>
     </section>
   )

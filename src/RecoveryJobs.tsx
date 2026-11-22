@@ -7,7 +7,7 @@ const jobs = {
 }
 
 export function RecoveryJobs({ solved, onSolve }: { solved: boolean; onSolve: () => void }) {
-  const [order, setOrder] = useState<(keyof typeof jobs)[]>(solved ? ['mount', 'rebuild', 'refresh'] : ['refresh', 'mount', 'rebuild'])
+  const [order, setOrder] = useState<(keyof typeof jobs)[]>(['refresh', 'mount', 'rebuild'])
   const [feedback, setFeedback] = useState('')
 
   function move(index: number, offset: number) {
@@ -34,16 +34,18 @@ export function RecoveryJobs({ solved, onSolve }: { solved: boolean; onSolve: ()
             <li key={id}>
               <span>{index + 1}</span>
               <div><strong>{jobs[id].title}</strong><p className="text-sm text-muted">{jobs[id].needs}</p></div>
-              <button className="filter" type="button" aria-label={`Move ${jobs[id].title} up`} disabled={solved || index === 0} onClick={() => move(index, -1)}>↑</button>
-              <button className="filter" type="button" aria-label={`Move ${jobs[id].title} down`} disabled={solved || index === order.length - 1} onClick={() => move(index, 1)}>↓</button>
+              <button className="filter" type="button" aria-label={`Move ${jobs[id].title} up`} disabled={index === 0} onClick={() => move(index, -1)}>↑</button>
+              <button className="filter" type="button" aria-label={`Move ${jobs[id].title} down`} disabled={index === order.length - 1} onClick={() => move(index, 1)}>↓</button>
             </li>
           ))}
         </ol>
-        <button className="lab-primary mt-4" type="button" disabled={solved} onClick={() => {
-          if (order.join() === 'mount,rebuild,refresh') onSolve()
-          else setFeedback('A job starts before its prerequisite is ready. Check what each card needs.')
+        <button className="lab-primary mt-4" type="button" onClick={() => {
+          if (order.join() === 'mount,rebuild,refresh') {
+            setFeedback(solved ? 'Correct. This case is already solved.' : 'Job order verified. Recovery can begin.')
+            if (!solved) onSolve()
+          } else { setFeedback('A job starts before its prerequisite is ready. Check what each card needs.') }
         }}>Test job order</button>
-        <p className="lab-result" role="status">{solved ? 'Job order verified. Recovery can begin.' : feedback}</p>
+        <p className="lab-result" role="status">{feedback}</p>
       </div>
     </section>
   )

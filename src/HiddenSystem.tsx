@@ -2,15 +2,15 @@ import { useState, type FormEvent } from 'react'
 
 export function HiddenSystem({ onSolve, solved }: { onSolve: () => void; solved: boolean }) {
   const [answer, setAnswer] = useState('')
-  const [incorrect, setIncorrect] = useState(false)
+  const [feedback, setFeedback] = useState('')
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (answer.trim().replace(/^\.\//, '') === 'nightly/scripts/export.sh') {
-      setIncorrect(false)
-      onSolve()
+      setFeedback(solved ? 'Correct. This case is already solved.' : 'Export located. Stage 02 is unlocked.')
+      if (!solved) onSolve()
     } else {
-      setIncorrect(true)
+      setFeedback('That path does not run the nightly export from /showcase. Check both clues.')
     }
   }
 
@@ -32,11 +32,11 @@ export function HiddenSystem({ onSolve, solved }: { onSolve: () => void; solved:
         <form className="mt-5" onSubmit={submit}>
           <label className="block text-sm font-semibold" htmlFor="export-path">Path relative to /showcase</label>
           <div className="mt-2 flex flex-wrap gap-2">
-            <input id="export-path" className="min-w-0 flex-1 rounded border border-line bg-navy px-3 py-2 font-mono" value={answer} onChange={(event) => { setAnswer(event.target.value); setIncorrect(false) }} autoComplete="off" spellCheck={false} required disabled={solved} />
-            <button className="lab-primary" disabled={solved}>Check path</button>
+            <input id="export-path" className="min-w-0 flex-1 rounded border border-line bg-navy px-3 py-2 font-mono" value={answer} onChange={(event) => { setAnswer(event.target.value); setFeedback('') }} autoComplete="off" spellCheck={false} required />
+            <button className="lab-primary">Check path</button>
           </div>
         </form>
-        <p className="lab-result" role="status">{solved ? 'Export located. Stage 02 is unlocked.' : incorrect ? 'That path won’t run the nightly export from /showcase. Check both clues.' : ''}</p>
+        <p className="lab-result" role="status">{feedback}</p>
       </div>
     </section>
   )

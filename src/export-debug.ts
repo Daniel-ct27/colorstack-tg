@@ -1,15 +1,15 @@
-export const initialConfig = '{\n  "inputKey": "rows",\n  "skipEmpty": true\n}'
+export const initialConfig = JSON.stringify({
+  inputKey: 'rows',
+  outputPath: 'reports/report.json',
+  skipEmpty: true,
+}, null, 2)
 
-interface ExportConfig {
-  inputKey: string
-  skipEmpty: boolean
-}
+const dashboardPath = '/showcase/reports/report.json'
 
-type QueryOutput = Record<string, number[]>
-
-function exportRows(config: ExportConfig, output: QueryOutput) {
-  const records = Object.hasOwn(output, config.inputKey) ? output[config.inputKey] : []
-  return records.length || !config.skipEmpty ? records : null
+function replay(inputKey: string, outputPath: string, skipEmpty: boolean, cwd: string, output: Record<string, number[]>) {
+  const records = Object.hasOwn(output, inputKey) ? output[inputKey] : []
+  if (!records.length && skipEmpty) return null
+  return { records, path: outputPath.startsWith('/') ? outputPath : `${cwd}/${outputPath}` }
 }
 
 export function checkExport(source: string) {
@@ -22,19 +22,22 @@ export function checkExport(source: string) {
 
   if (!config || typeof config !== 'object' ||
       !('inputKey' in config) || typeof config.inputKey !== 'string' ||
+      !('outputPath' in config) || typeof config.outputPath !== 'string' || !config.outputPath.trim() ||
       !('skipEmpty' in config) || typeof config.skipEmpty !== 'boolean') {
-    return { error: 'Use a string for inputKey and true or false for skipEmpty.' } as const
+    return { error: 'Use text for inputKey and outputPath, and true or false for skipEmpty.' } as const
   }
 
-  const options = { inputKey: config.inputKey, skipEmpty: config.skipEmpty }
-  const nightly = exportRows(options, { records: [14, 25, 31] })
-  const manual = exportRows(options, { rows: [14, 25, 31], records: [14, 25, 31] })
-  const empty = exportRows(options, { records: [] })
+  const { inputKey, outputPath, skipEmpty } = config
+  const records = [14, 25, 31]
+  const nightly = replay(inputKey, outputPath, skipEmpty, '/showcase/nightly', { records })
+  const manual = replay(inputKey, outputPath, skipEmpty, '/showcase', { rows: records, records })
+  const empty = replay(inputKey, outputPath, skipEmpty, '/showcase/nightly', { records: [] })
 
   return {
     checks: [
-      { label: 'Scheduled run writes all three records', passed: nightly?.join() === '14,25,31' },
-      { label: 'Manual retry still writes all three records', passed: manual?.join() === '14,25,31' },
+      { label: 'Scheduled run exports all three jobs', passed: nightly?.records.join() === records.join() },
+      { label: nightly ? `Scheduled output reaches the dashboard (wrote ${nightly.path})` : 'Scheduled output reaches the dashboard (no file written)', passed: nightly?.path === dashboardPath },
+      { label: 'Manual retry still updates the dashboard', passed: manual?.path === dashboardPath && manual.records.join() === records.join() },
       { label: 'Empty runs leave the previous report intact', passed: empty === null },
     ],
   } as const

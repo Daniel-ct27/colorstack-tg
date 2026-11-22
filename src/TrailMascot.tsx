@@ -3,7 +3,7 @@ import { useState } from 'react'
 const hints: Readonly<Partial<Record<number, [string, string]>>> = {
   1: ['Compare the handoff with the directory listing. The filename appears twice.', 'Start at /showcase and follow the nightly folder. Your answer should be relative to /showcase.'],
   2: ['Test the report first. Which requirement actually fails?', 'Use git show to inspect the commit that touched the status list. A change to sorting or the title cannot restore missing jobs.'],
-  3: ['Compare the keys the query returns in each run. Which one is the exporter trying to read?', 'The retry supplies an extra key. Set inputKey to the key both runs provide, and keep skipEmpty enabled.'],
+  3: ['Compare the keys the query returns in each run. Which one is the exporter trying to read?', 'Use the key both runs provide. Then compare their working directories and point the exporter to the full path the dashboard watches.'],
   8: ['Find the job with no prerequisite. It should go first.', 'The export needs a mounted snapshot, and the dashboard needs an exported report.'],
 }
 

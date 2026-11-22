@@ -3,16 +3,17 @@ import { checkExport, initialConfig } from './export-debug.ts'
 
 const logs = {
   'Scheduled run': [
+    '21:41:58 INFO  scheduler cwd=/showcase/nightly',
     '21:41:59 INFO  query completed count=3 output.keys=[records]',
     '21:42:00 INFO  exporter read inputKey=rows count=0',
     '21:42:00 WARN  exporter skipped writing: empty input',
-    '21:42:01 INFO  dashboard kept previous report',
+    '21:42:01 INFO  dashboard watches /showcase/reports/report.json',
   ],
   'Manual retry': [
-    '23:57:00 INFO  retry compatibility mode enabled',
+    '23:57:00 INFO  retry cwd=/showcase compatibility=true',
     '23:57:01 INFO  query completed count=3 output.keys=[records,rows]',
     '23:57:01 INFO  exporter read inputKey=rows count=3',
-    '23:57:02 INFO  exporter wrote report.json',
+    '23:57:02 INFO  exporter wrote /showcase/reports/report.json',
   ],
   'Empty run': [
     '03:00:10 INFO  query completed count=0 output.keys=[records]',
@@ -47,7 +48,7 @@ export function ExportTimeline({ solved, onSolve }: { solved: boolean; onSolve: 
         <pre className="mt-4 whitespace-pre-wrap break-words rounded border border-line bg-navy p-3 font-mono text-sm" aria-label={`${selected} log`}>{logs[selected].join('\n')}</pre>
         <form className="mt-5" onSubmit={(event) => { event.preventDefault(); verify() }}>
           <label className="block font-semibold" htmlFor="export-config">export.config.json</label>
-          <textarea id="export-config" className="mt-2 w-full rounded border border-line bg-navy p-3 font-mono" rows={4} spellCheck={false} value={source} onChange={(event) => { setSource(event.target.value); setResult(undefined) }} />
+          <textarea id="export-config" className="mt-2 w-full rounded border border-line bg-navy p-3 font-mono" rows={5} spellCheck={false} value={source} onChange={(event) => { setSource(event.target.value); setResult(undefined) }} />
           <button className="lab-primary mt-2" type="submit">Run export checks</button>
         </form>
         <div className="mt-4 space-y-2" role="status">
@@ -57,7 +58,7 @@ export function ExportTimeline({ solved, onSolve }: { solved: boolean; onSolve: 
               {result.checks.map(({ label, passed }) => <li key={label} className={passed ? 'lab-pass' : 'lab-fail'}><strong>{passed ? 'PASS' : 'FAIL'}</strong> · {label}</li>)}
             </ul>
           )}
-          {result?.checks?.every(({ passed }) => passed) && <p className="lab-result">Export repaired. All three checks passed.</p>}
+          {result?.checks?.every(({ passed }) => passed) && <p className="lab-result">Export repaired. All four checks passed.</p>}
         </div>
       </div>
     </section>

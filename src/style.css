@@ -167,11 +167,26 @@ body { background: radial-gradient(ellipse at top right, #232346, transparent 42
 .hero-photo, .chapter-scene img { transform: scale(1.05); }
 .hero-photo { filter: saturate(.85) brightness(.9); }
 .chapter-scene::after { background: linear-gradient(0deg, #101b32 8%, #101b32d9 38%, #141a3722 90%); }
-@media (prefers-reduced-motion: no-preference) {
-  .hero-photo, .chapter-scene img { animation: scene-drift 23s ease-in-out infinite alternate; }
-  .chapter:nth-of-type(even) .chapter-scene img { animation-direction: alternate-reverse; }
+
+body { background: #171920; }
+#root { position: relative; isolation: isolate; }
+.campus-backdrop { position: fixed; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; background: radial-gradient(ellipse at 8% 0%, #483226 0%, transparent 48%), radial-gradient(ellipse at 100% 65%, #29283f, transparent 70%), #191c25; }
+.campus-backdrop::before, .campus-backdrop::after { content: ""; position: absolute; inset: 0; }
+.campus-backdrop::before {
+  inset: -2rem;
+  background: linear-gradient(100deg, #1b1c26eb, #29253ad1 55%, #302335b8), url('/art/jubilee-hall.jpg') center 55% / cover;
+  opacity: .74;
+  transform: translate3d(var(--drift-x, 0), var(--drift-y, 0), 0);
 }
-@keyframes scene-drift {
-  from { transform: scale(1.05) translate3d(0, 0, 0); }
-  to { transform: scale(1.13) translate3d(-1%, 1%, 0); }
+.campus-backdrop::after {
+  background: radial-gradient(circle at var(--light-x, 64%) var(--light-y, 22%), #ffae6369, #b26f4c2e 17%, transparent 44%),
+    radial-gradient(circle, #ffe2bd1f 1px, transparent 1px) 0 0 / 21px 21px,
+    linear-gradient(0deg, #121823bd, transparent 75%);
+}
+.trail-summary { background: radial-gradient(ellipse at top right, #503647, transparent 74%), #282a3a; }
+.mission-list { background: #222634; }
+.masthead { border-color: #524450; }
+.eyebrow { color: #ffdda4; }
+@media (prefers-reduced-motion: no-preference) {
+  .campus-backdrop::before { transition: transform 420ms cubic-bezier(.2,.65,.25,1); }
 }

@@ -5,6 +5,7 @@ import { MissingCommit } from './MissingCommit.tsx'
 import { chapterScenes, evidenceNotes, missionScenes } from './story.ts'
 import { HiddenSystem } from './HiddenSystem.tsx'
 import { stageStatus } from './progress.ts'
+import { CampusBackdrop } from './CampusBackdrop.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -201,4 +202,4 @@ function App() {
   )
 }
 
-createRoot(document.getElementById('root')!).render(<App />)
+createRoot(document.getElementById('root')!).render(<><CampusBackdrop /><App /></>)

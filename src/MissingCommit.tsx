@@ -76,15 +76,17 @@ export function MissingCommit({ solved, onSolve, progressNotice }: MissingCommit
         <section className="repo-board" aria-labelledby="repo-board-title">
           <h4 id="repo-board-title">Commit board</h4>
           <ol>
-            {repositoryCommits.map(({ hash, summary }) => (
-              <li key={hash}>
-                <button className="repo-node" type="button" onClick={() => run(`git show ${hash}`)}>
-                  <code>{hash}</code>
-                  <strong>{summary}</strong>
-                  <span>{lab.reverted.includes(hash) ? 'Reverted' : lab.inspected.includes(hash) ? 'Inspected' : 'In history'}</span>
-                </button>
-              </li>
-            ))}
+            {repositoryCommits.map(({ hash, summary }) => {
+              const state = lab.reverted.includes(hash) ? 'reverted' : lab.inspected.includes(hash) ? 'inspected' : 'history'
+              return (
+                <li key={hash} data-state={state}>
+                  <button className="repo-node" type="button" onClick={() => run(`git show ${hash}`)}>
+                    <span className="repo-node-copy"><strong>{summary}</strong><code>{hash}</code></span>
+                    <span className="repo-status">{state === 'reverted' ? 'Reverted' : state === 'inspected' ? 'Inspected' : 'In history'}</span>
+                  </button>
+                </li>
+              )
+            })}
           </ol>
         </section>
         <form className="mt-4" onSubmit={submit}>

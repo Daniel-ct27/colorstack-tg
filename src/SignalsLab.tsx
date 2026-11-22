@@ -7,11 +7,16 @@ export function SignalsLab({ solved, onSolve }: { solved: boolean; onSolve: () =
   const [source, setSource] = useState('All services')
   const [query, setQuery] = useState('')
   const [pins, setPins] = useState<string[]>([])
+  const [tracing, setTracing] = useState(false)
+  const [linked, setLinked] = useState<string>()
+  const [handoff, setHandoff] = useState('')
   const [result, setResult] = useState<ReturnType<typeof checkWindow>>()
   const visible = trail.filter((record) => (source === 'All services' || record.source === source) &&
+    (!tracing || (record.time >= '21:39' && record.time <= '21:43')) &&
     `${record.time} ${record.run} ${record.result}`.toLowerCase().includes(query.trim().toLowerCase()))
 
   function toggle(id: string) {
+    if (tracing) { setLinked(id); setHandoff(''); return }
     setPins(pins.includes(id) ? pins.filter((pin) => pin !== id) : [...pins, id])
     setResult(undefined)
   }
@@ -19,7 +24,15 @@ export function SignalsLab({ solved, onSolve }: { solved: boolean; onSolve: () =
   function verify() {
     const next = checkWindow(pins)
     setResult(next)
-    if (next.solved && !solved) onSolve()
+  }
+
+  function linkHandoff() {
+    if (linked !== 'e09') {
+      setHandoff('Look for a preparation record from the same showcase run within the confirmed window.')
+      return
+    }
+    setHandoff('Handoff traced. The gateway prepared 12 jobs, but the next dashboard refresh showed seven. Nia will investigate that exchange.')
+    if (!solved) onSolve()
   }
 
   return (
@@ -33,10 +46,19 @@ export function SignalsLab({ solved, onSolve }: { solved: boolean; onSolve: () =
           <h3 className="lab-label">Pinned evidence · {pins.length}/2</h3>
           {pins.length === 0 && <p className="mt-2 text-sm text-muted">Pin records from the timeline to compare them here.</p>}
           {trail.filter(({ id }) => pins.includes(id)).map(({ id, time, result: note }) => (
-            <button type="button" className="filter mt-2 w-full text-left text-sm" key={id} onClick={() => toggle(id)} aria-label={`Unpin ${time} ${note}`}>{time} · {note} <span aria-hidden="true">×</span></button>
+            <button type="button" className="filter mt-2 w-full text-left text-sm" disabled={tracing} key={id} onClick={() => toggle(id)} aria-label={`Unpin ${time} ${note}`}>{time} · {note} <span aria-hidden="true">×</span></button>
           ))}
-          <button type="button" className="lab-primary mt-3" data-crew-action disabled={pins.length !== 2} onClick={verify}>Verify window</button>
+          <button type="button" className="lab-primary mt-3" data-crew-action disabled={pins.length !== 2 || tracing} onClick={verify}>Verify window</button>
           <p className="lab-result" role="status">{result?.feedback}</p>
+          {result?.solved && !tracing && <button type="button" className="filter mt-3" onClick={() => { setTracing(true); setQuery(''); setSource('All services') }}>Follow the handoff →</button>}
+          {tracing && (
+            <div className="mt-3">
+              <p className="text-sm text-muted">Inside the window, link the record showing what the gateway prepared before the incomplete refresh.</p>
+              <button type="button" className="lab-primary mt-2" data-crew-action disabled={!linked} onClick={linkHandoff}>Send the link to Nia</button>
+              <p className="lab-result" role="status">{handoff}</p>
+              <button type="button" className="filter mt-2" onClick={() => { setTracing(false); setLinked(undefined); setHandoff('') }}>Back to full timeline</button>
+            </div>
+          )}
         </div>
       </div>
       <div className="lab-console">
@@ -53,12 +75,12 @@ export function SignalsLab({ solved, onSolve }: { solved: boolean; onSolve: () =
         </div>
         <ul className="signals-list">
           {visible.map(({ id, time, source: service, run, result: note }) => {
-            const pinned = pins.includes(id)
+            const pinned = tracing ? linked === id : pins.includes(id)
             return (
               <li key={id}>
                 <time>{time}</time>
                 <div><strong>{note}</strong><small>{service} · {run}</small></div>
-                <button type="button" className="filter" aria-pressed={pinned} aria-label={`${pinned ? 'Unpin' : 'Pin'} ${time} ${note}`} disabled={!pinned && pins.length === 2} onClick={() => toggle(id)}>{pinned ? 'Pinned' : 'Pin'}</button>
+                <button type="button" className="filter" aria-pressed={pinned} aria-label={`${tracing ? 'Link' : pinned ? 'Unpin' : 'Pin'} ${time} ${note}`} disabled={!tracing && !pinned && pins.length === 2} onClick={() => toggle(id)}>{tracing ? (pinned ? 'Linked' : 'Link') : pinned ? 'Pinned' : 'Pin'}</button>
               </li>
             )
           })}

@@ -3,9 +3,15 @@ import { createRoot } from 'react-dom/client'
 import { chapters, missionsForChapter, type Chapter } from './missions.ts'
 import { MissingCommit } from './MissingCommit.tsx'
 import { chapterScenes, evidenceNotes } from './story.ts'
+import { HiddenSystem } from './HiddenSystem.tsx'
+import { stageStatus } from './progress.ts'
 import './style.css'
 
-const progressKey = 'colorstack-code-hunt:missing-commit'
+const progressKey = 'colorstack-code-hunt:completed-stages'
+
+function missionUrl(id: number) {
+  return `/missions/${String(id).padStart(2, '0')}`
+}
 
 const path = window.location.pathname
 const match = /^\/missions\/(\d{2})\/?$/.exec(path)
@@ -17,22 +23,30 @@ if (path !== '/') {
 
 function App() {
   const [chapter, setChapter] = useState<Chapter | 'All'>('All')
-  const [missingCommitSolved, setMissingCommitSolved] = useState(() => {
+  const [completed, setCompleted] = useState<number[]>(() => {
     try {
-      return localStorage.getItem(progressKey) === 'solved'
+      const saved: unknown = JSON.parse(localStorage.getItem(progressKey) ?? '[]')
+      const ids = Array.isArray(saved) ? saved.filter((id): id is number => Number.isInteger(id) && id >= 1 && id <= 10) : []
+      if (localStorage.getItem('colorstack-code-hunt:missing-commit') === 'solved' && !ids.includes(2)) ids.push(2)
+      return ids
     } catch {
-      return false
+      return []
     }
   })
   const [progressNotice, setProgressNotice] = useState('')
   const displayed = missionsForChapter(chapter)
+  const allMissions = missionsForChapter('All')
+  const current = allMissions.find(({ id }) => stageStatus(id, completed) === 'current')
+  const completedCount = allMissions.filter(({ id }) => stageStatus(id, completed) === 'complete').length
 
-  function recordMissingCommitSolve() {
-    setMissingCommitSolved(true)
+  function recordSolve(id: number) {
+    if (stageStatus(id, completed) !== 'current') return
+    const updated = [...completed, id]
+    setCompleted(updated)
     try {
-      localStorage.setItem(progressKey, 'solved')
+      localStorage.setItem(progressKey, JSON.stringify(updated))
     } catch {
-      setProgressNotice('Browser storage is unavailable. This solve lasts until you reload the page.')
+      setProgressNotice('Browser storage is unavailable. Progress cannot follow you to another page.')
     }
   }
 
@@ -53,13 +67,28 @@ function App() {
             <>
               <p className="eyebrow mt-5">{mission.chapter} · Stage {String(mission.id).padStart(2, '0')} · {mission.focus}</p>
               <div className="case-heading mt-2"><h1 id="case-title">{mission.title}</h1></div>
-              <p className="max-w-prose leading-relaxed text-muted">{evidenceNotes[mission.id] ?? mission.briefing}</p>
-              {mission.id === 2 ? (
-                <MissingCommit solved={missingCommitSolved} onSolve={recordMissingCommitSolve} progressNotice={progressNotice} />
+              {stageStatus(mission.id, completed) === 'locked' ? (
+                <div className="stage-lock">
+                  <h2 className="font-bold text-gold">Stage locked</h2>
+                  <p className="mt-1 text-muted">Complete the earlier missions to open this case file.</p>
+                  {current && <a className="nav-link mt-2 inline-block" href={missionUrl(current.id)}>Go to Stage {String(current.id).padStart(2, '0')} →</a>}
+                </div>
               ) : (
-                <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
+                <>
+                  <p className="max-w-prose leading-relaxed text-muted">{evidenceNotes[mission.id] ?? mission.briefing}</p>
+                  {mission.id === 1 ? (
+                    <HiddenSystem solved={completed.includes(1)} onSolve={() => recordSolve(1)} />
+                  ) : mission.id === 2 ? (
+                    <MissingCommit solved={completed.includes(2)} onSolve={() => recordSolve(2)} progressNotice="" />
+                  ) : (
+                    <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
+                  )}
+                  {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
+                  {mission.id < allMissions.length && stageStatus(mission.id, completed) === 'complete' && !progressNotice && (
+                    <a className="primary-link" href={missionUrl(mission.id + 1)}>Next stage →</a>
+                  )}
+                </>
               )}
-              {mission.id < 10 && <a className="nav-link mt-6 inline-block" href={`/missions/${String(mission.id + 1).padStart(2, '0')}`}>Next case file →</a>}
             </>
           ) : (
             <h1 id="case-title" className="mt-4 text-3xl font-bold">Case file not found</h1>
@@ -82,9 +111,9 @@ function App() {
         <div className="case-heading">
           <div>
             <p className="eyebrow">Operation Lost Access</p>
-            <h2 id="mission-title">The case files</h2>
+            <h2 id="mission-title">Mission path</h2>
           </div>
-          <p>Follow the three chapters in order for the full story. Open any briefing to see the evidence you’ll need. Stage 02 is playable now.</p>
+          <p>Follow the evidence through three chapters. Solving your current stage opens the next case file.</p>
         </div>
         <div className="chapter-filters" role="group" aria-label="Filter missions by chapter">
           {(['All', ...chapters] as const).map((option) => (
@@ -93,7 +122,8 @@ function App() {
             </button>
           ))}
         </div>
-        <p className="case-count" role="status">{displayed.length} mission briefings</p>
+        <p className="case-count" role="status">{completedCount} of {allMissions.length} stages solved</p>
+        {current && <a className="nav-link path-resume" href={missionUrl(current.id)}>{completedCount ? 'Continue' : 'Start'} Stage {String(current.id).padStart(2, '0')} →</a>}
         {progressNotice && <p className="mb-4 text-sm text-muted">{progressNotice}</p>}
         {chapters.filter((name) => chapter === 'All' || name === chapter).map((name) => {
           const scene = chapterScenes[name]
@@ -107,18 +137,28 @@ function App() {
                   <p>{scene.story}</p>
                 </div>
               </div>
-              <ol className="mission-list">
-                {displayed.filter((mission) => mission.chapter === name).map((mission) => (
-                  <li key={mission.id}>
-                    <a className="mission" href={`/missions/${String(mission.id).padStart(2, '0')}`}>
+              <ol className="mission-list mission-path">
+                {displayed.filter((mission) => mission.chapter === name).map((mission) => {
+                  const status = stageStatus(mission.id, completed)
+                  const contents = (
+                    <>
                       <span className="stage-number"><span className="sr-only">Stage </span>{String(mission.id).padStart(2, '0')}</span>
                       <span><strong>{mission.title}</strong><small>{mission.focus}</small></span>
                       <span className="mission-action">
-                        {mission.id === 2 ? (missingCommitSolved ? 'Solved' : 'Play') : 'Briefing'} <span aria-hidden="true">↗</span>
+                        {status === 'locked' ? 'Locked' : status === 'complete' ? 'Solved' : 'Current'}
                       </span>
-                    </a>
-                  </li>
-                ))}
+                    </>
+                  )
+                  return (
+                    <li key={mission.id}>
+                      {status === 'locked' ? (
+                        <div className="mission" data-state={status}>{contents}</div>
+                      ) : (
+                        <a className="mission" data-state={status} href={missionUrl(mission.id)} aria-current={status === 'current' ? 'step' : undefined}>{contents}</a>
+                      )}
+                    </li>
+                  )
+                })}
               </ol>
             </section>
           )

@@ -243,3 +243,15 @@ body { background: #131d31; }
 .dependency-jobs { display: grid; gap: .55rem; margin-top: .8rem; }
 .dependency-jobs li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: .55rem; align-items: center; padding: .55rem; border: 1px solid var(--color-line); border-radius: .6rem; background: #293a57; }
 .dependency-jobs li > span { color: var(--color-gold); font-weight: 700; }
+
+.repo-board { margin-top: 1rem; }
+.repo-board h4 { font-weight: 700; }
+.repo-board ol { display: grid; gap: .45rem; margin-top: .5rem; }
+.repo-node { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .5rem .75rem; width: 100%; padding: .55rem .7rem; border: 1px solid var(--color-line); border-radius: .5rem; background: #233653; text-align: left; cursor: pointer; }
+.repo-node:hover { border-color: var(--color-gold); }
+.repo-node code { color: var(--color-gold); }
+.repo-node span { color: var(--color-muted); font-size: .78rem; }
+@media (max-width: 480px) {
+  .repo-node { grid-template-columns: auto minmax(0, 1fr); }
+  .repo-node span { grid-column: 2; }
+}

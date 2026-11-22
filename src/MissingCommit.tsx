@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react'
-import { initialLab, runCommand } from './missing-commit.ts'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { initialLab, repositoryCommits, runCommands } from './missing-commit.ts'
 
 interface MissingCommitProps {
   solved: boolean
@@ -10,13 +10,21 @@ interface MissingCommitProps {
 export function MissingCommit({ solved, onSolve, progressNotice }: MissingCommitProps) {
   const [lab, setLab] = useState(initialLab)
   const [command, setCommand] = useState('')
-  const [transcript, setTranscript] = useState<{ command: string; output: string }[]>([])
+  const [transcript, setTranscript] = useState<{ id: number; command: string; output: string }[]>([])
+  const output = useRef<HTMLDivElement>(null)
+  const nextEntryId = useRef(0)
+
+  useEffect(() => {
+    if (output.current) output.current.scrollTop = output.current.scrollHeight
+  }, [transcript])
 
   function run(input: string) {
-    const result = runCommand(lab, input)
+    const result = runCommands(lab, input)
+    if (!result.entries.length) return
+    const entries = result.entries.map((entry) => ({ ...entry, id: nextEntryId.current++ }))
     setLab(result.state)
-    setTranscript((entries) => [...entries.slice(-19), { command: input, output: result.output }])
-    if (result.state.solved && !solved) onSolve()
+    setTranscript((previous) => [...previous, ...entries].slice(-100))
+    if (result.verified && !solved) onSolve()
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -65,17 +73,35 @@ export function MissingCommit({ solved, onSolve, progressNotice }: MissingCommit
           ))}
         </div>
 
+        <section className="repo-board" aria-labelledby="repo-board-title">
+          <h4 id="repo-board-title">Commit board</h4>
+          <ol>
+            {repositoryCommits.map(({ hash, summary }) => (
+              <li key={hash}>
+                <button className="repo-node" type="button" onClick={() => run(`git show ${hash}`)}>
+                  <code>{hash}</code>
+                  <strong>{summary}</strong>
+                  <span>{lab.reverted.includes(hash) ? 'Reverted' : lab.inspected.includes(hash) ? 'Inspected' : 'In history'}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
         <form className="mt-4" onSubmit={submit}>
-          <label className="block text-sm font-semibold" htmlFor="lab-command">Command</label>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <input id="lab-command" className="min-w-0 flex-1 rounded border border-line bg-navy px-3 py-2 font-mono" value={command} onChange={(event) => setCommand(event.target.value)} placeholder="git show HASH" maxLength={100} autoComplete="off" spellCheck={false} required />
-            <button className="filter" type="submit">Run command</button>
-          </div>
+          <label className="block text-sm font-semibold" htmlFor="lab-command">Commands</label>
+          <p id="command-help" className="mt-1 text-sm text-muted">One command per line. Run the batch in order, or use Ctrl/⌘ + Enter.</p>
+          <textarea id="lab-command" className="mt-2 w-full rounded border border-line bg-navy px-3 py-2 font-mono" rows={4} value={command} onChange={(event) => setCommand(event.target.value)} onKeyDown={(event) => {
+            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+              event.preventDefault()
+              event.currentTarget.form?.requestSubmit()
+            }
+          }} aria-describedby="command-help" placeholder={'git log --oneline\nrun report'} maxLength={2000} autoComplete="off" spellCheck={false} required />
+          <button className="lab-primary mt-2" type="submit">Run commands</button>
         </form>
-        <div className="lab-output mt-4 max-h-96 space-y-4 overflow-auto rounded border border-line bg-navy p-4" role="log" aria-label="Sandbox output">
+        <div ref={output} className="lab-output mt-4 max-h-96 space-y-4 overflow-auto rounded border border-line bg-navy p-4" role="log" aria-label="Sandbox output">
           {transcript.length === 0 && <p className="text-sm text-muted">Ready. Test the report to see what broke.</p>}
-          {transcript.map((entry, index) => (
-            <div key={index}>
+          {transcript.map((entry) => (
+            <div key={entry.id}>
               <p className="break-all font-mono text-sm text-gold">$ {entry.command}</p>
               <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-sm text-ink">
                 {entry.output.split('\n').map((line, lineIndex, lines) => (
@@ -83,7 +109,7 @@ export function MissingCommit({ solved, onSolve, progressNotice }: MissingCommit
                 ))}
               </pre>
             </div>
-          )).reverse()}
+          ))}
         </div>
       </div>
     </section>

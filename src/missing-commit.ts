@@ -4,6 +4,8 @@ const commits = [
   { hash: '7f01da9', summary: 'Normalize report sorting', diff: '- sort: oldest-first\n+ sort: newest-first' },
 ] as const
 
+export const repositoryCommits = commits.map(({ hash, summary }) => ({ hash, summary }))
+
 const regression = commits[1].hash
 
 export interface LabState {
@@ -58,4 +60,18 @@ export function runCommand(state: LabState, input: string): { state: LabState; o
     state: { ...state, reverted: [...state.reverted, commit.hash], solved: false },
     output: `Reverted ${commit.hash}. Run the report to see what changed.`,
   }
+}
+
+export function runCommands(state: LabState, input: string) {
+  const entries: { command: string; output: string }[] = []
+  let verified = false
+  for (const line of input.split(/\r?\n/)) {
+    const command = line.trim()
+    if (!command) continue
+    const result = runCommand(state, command)
+    state = result.state
+    entries.push({ command, output: result.output })
+    verified ||= state.solved
+  }
+  return { state, entries, verified }
 }

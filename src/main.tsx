@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { chapters, missionsForChapter, type Chapter } from './missions.ts'
 import { MissingCommit } from './MissingCommit.tsx'
@@ -40,6 +40,13 @@ function App() {
   })
   const [progressNotice, setProgressNotice] = useState('')
   const [justSolved, setJustSolved] = useState<number | null>(null)
+  const [revealedSolve, setRevealedSolve] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (justSolved === null) return
+    const timer = window.setTimeout(() => setRevealedSolve(justSolved), 1000)
+    return () => window.clearTimeout(timer)
+  }, [justSolved])
   const displayed = missionsForChapter(chapter)
   const allMissions = missionsForChapter('All')
   const current = allMissions.find(({ id }) => stageStatus(id, completed) === 'current')
@@ -105,7 +112,7 @@ function App() {
                     <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
                   )}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
-                  {mission.id < allMissions.length && stageStatus(mission.id, completed) === 'complete' && !progressNotice && (
+                  {mission.id < allMissions.length && stageStatus(mission.id, completed) === 'complete' && (justSolved !== mission.id || revealedSolve === mission.id) && !progressNotice && (
                     <div className="case-unlock" data-new={justSolved === mission.id}>
                     <span className="case-stamp">Case solved</span>
                     <a className="primary-link" href={missionUrl(mission.id + 1)}>Open next case →</a>
@@ -205,7 +212,7 @@ function App() {
       </>
       )}
 
-      <TrailMascot solvedStage={justSolved} activeStage={mission && stageStatus(mission.id, completed) === 'current' ? mission.id : undefined} />
+      <TrailMascot solvedStage={revealedSolve} activeStage={mission && stageStatus(mission.id, completed) === 'current' ? mission.id : undefined} />
       <footer className="site-footer">
         <p>ColorStack at Fisk University · A fictional campus mystery</p>
         <details>

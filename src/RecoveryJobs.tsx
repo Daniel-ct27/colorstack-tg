@@ -1,64 +1,108 @@
 import { useState } from 'react'
-import { checkSchedule, jobs, type Job } from './recovery-plan.ts'
+import { checkRound, jobs, type Job } from './recovery-plan.ts'
 
 const jobIds = Object.keys(jobs) as Job[]
-const roundNumbers = [1, 2, 3] as const
 
 export function RecoveryJobs({ solved, onSolve }: { solved: boolean; onSolve: () => void }) {
-  const [placements, setPlacements] = useState<Partial<Record<Job, number>>>({})
-  const [selected, setSelected] = useState<Job>()
+  const [rounds, setRounds] = useState<Job[][]>([])
+  const [queue, setQueue] = useState<Job[]>([])
+  const [running, setRunning] = useState(false)
   const [feedback, setFeedback] = useState('')
-  const [passed, setPassed] = useState(false)
-  const rounds = roundNumbers.map((round) => jobIds.filter((id) => placements[id] === round))
+  const [blocked, setBlocked] = useState(false)
+  const finished = new Set(rounds.flat())
+  const round = rounds.length + 1
+  const complete = finished.size === jobIds.length
+  const expired = round > 3 && !complete
 
-  function place(round?: number) {
-    if (!selected) return
-    setPlacements({ ...placements, [selected]: round })
-    setSelected(undefined)
+  function select(id: Job) {
+    setQueue(queue.includes(id) ? queue.filter((job) => job !== id) : [...queue, id])
     setFeedback('')
-    setPassed(false)
+    setBlocked(false)
+  }
+
+  function dispatch() {
+    const error = checkRound(queue, finished, round)
+    setBlocked(Boolean(error))
+    if (error) {
+      setFeedback(error)
+      return
+    }
+    setRunning(true)
+    setFeedback(`Round ${round} is in motion. Finish the round to release the workers.`)
+  }
+
+  function finishRound() {
+    const next = [...rounds, queue]
+    const finishedCount = next.flat().length
+    setRounds(next)
+    setQueue([])
+    setRunning(false)
+    if (finishedCount === jobIds.length) {
+      setFeedback('All six jobs finished. The showcase is ready to reconcile.')
+      if (!solved) onSolve()
+    } else if (next.length === 3) {
+      setFeedback('Time is up with jobs still in the queue. Undo the last round or restart the shift.')
+    } else {
+      setFeedback(`Round ${round} finished. Check which jobs the workers unlocked.`)
+    }
+  }
+
+  function reset(previous: Job[][]) {
+    setRounds(previous)
+    setQueue([])
+    setRunning(false)
+    setFeedback('')
+    setBlocked(false)
   }
 
   return (
     <section className="lab-workbench" aria-labelledby="recovery-title">
       <div className="lab-brief">
         <p className="eyebrow">Dependency scheduling</p>
-        <h2 id="recovery-title">Finish in three rounds.</h2>
-        <p className="lab-lede">Two workers are available per round. A job takes a full round and can start only after its prerequisites finish.</p>
-        <p className="text-sm text-muted">Choose a job card, then assign it to a round. Select it again anytime to move it.</p>
+        <h2 id="recovery-title">Run the recovery shift.</h2>
+        <p className="lab-lede">Get all six jobs done in three rounds. You have two workers. A job can only use work that finished in an earlier round.</p>
+        <p className="text-sm text-muted">Tap a job to assign it to a free worker, then send the workers out. Finish the round to bring them back and free up both slots.</p>
       </div>
       <div className="lab-console">
-        <div className="lab-console-bar"><h3>Recovery job board</h3><span className="lab-label">{rounds.flat().length}/6 scheduled</span></div>
-        <ul className="schedule-tray">
-          {jobIds.map((id) => (
-            <li key={id}>
-              <button type="button" className="decision-tile" aria-pressed={selected === id} onClick={() => setSelected(selected === id ? undefined : id)}>
-                <strong>{jobs[id].title}</strong>
-                <small>{jobs[id].needs.length ? 'Needs: ' + jobs[id].needs.map((job) => jobs[job].title).join(', ') : 'No prerequisites'}</small>
-                <small>{placements[id] ? `Round ${placements[id]}` : 'Waiting for a worker'}</small>
-              </button>
-            </li>
-          ))}
-        </ul>
-        <p className="schedule-selection" aria-live="polite">{selected ? `Assigning: ${jobs[selected].title}` : 'Choose a job card to assign it.'}</p>
-        <div className="schedule-rounds">
-          {rounds.map((round, index) => (
-            <section key={index} aria-label={`Round ${index + 1}`}>
-              <h4>Round {index + 1}</h4>
-              <p className={round.length > 2 ? 'lab-fail' : 'text-muted'}>{round.length}/2 workers</p>
-              <ul>{round.map((id) => <li key={id}>{jobs[id].title}</li>)}</ul>
-              <button className="filter" type="button" disabled={!selected} onClick={() => place(index + 1)}>Assign to round {index + 1}</button>
-            </section>
-          ))}
+        <div className="lab-console-bar"><h3>Recovery dispatch</h3><span className="lab-label">{finished.size}/6 finished</span></div>
+        <div className="worker-shift" data-running={running}>
+          <h4>{complete ? 'Shift complete' : expired ? 'Shift ended' : `Round ${round} of 3`}</h4>
+          <div className="worker-lanes">
+            {[0, 1].map((worker) => <div className="worker-lane" key={worker}>
+              <strong>Worker {worker + 1}</strong>
+              <p>{queue[worker] ? jobs[queue[worker]].title : 'Free'}</p>
+              {running && queue[worker] && <span aria-hidden="true" />}
+            </div>)}
+          </div>
+          <div className="lab-controls">
+            {running ? (
+              <button className="lab-primary" type="button" onClick={finishRound}>Finish round {round}</button>
+            ) : (
+              <button className="lab-primary" data-crew-action type="button" disabled={!queue.length || expired || complete} onClick={dispatch}>Send workers out</button>
+            )}
+            <button className="filter" type="button" disabled={!rounds.length || running} onClick={() => reset(rounds.slice(0, -1))}>Undo last round</button>
+            <button className="filter" type="button" disabled={!rounds.length && !queue.length} onClick={() => reset([])}>Restart shift</button>
+          </div>
+          <p className={blocked || expired ? 'lab-fail mt-3' : 'lab-result'} role="status">{feedback}</p>
         </div>
-        {selected && placements[selected] && <button className="filter mt-2" type="button" onClick={() => place()}>Return job to queue</button>}
-        <button data-crew-action className="lab-primary mt-4" type="button" onClick={() => {
-          const error = checkSchedule(rounds)
-          setPassed(error === null)
-          setFeedback(error ?? 'All six jobs finished within three rounds.')
-          if (error === null && !solved) onSolve()
-        }}>Start the workers</button>
-        <p className={passed ? 'lab-result' : 'lab-fail mt-3'} role="status">{feedback}</p>
+        <ul className="schedule-tray" aria-label="Recovery job cards">
+          {jobIds.map((id) => {
+            const assigned = queue.includes(id)
+            const done = finished.has(id)
+            return (
+              <li key={id}>
+                <button type="button" className="decision-tile" aria-pressed={assigned} disabled={done || running || expired || (!assigned && queue.length >= 2)} onClick={() => select(id)}>
+                  <strong>{jobs[id].title}</strong>
+                  <small>{jobs[id].needs.length ? 'Needs: ' + jobs[id].needs.map((job) => jobs[job].title).join(', ') : 'No prerequisites'}</small>
+                  <small>{done ? '✓ Finished' : assigned ? (running ? 'In progress' : 'Assigned') : 'Waiting'}</small>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+        {rounds.length > 0 && <ol className="worker-history" aria-label="Finished rounds">
+          {rounds.map((jobsDone, index) => <li key={index}><strong>✓ Round {index + 1}</strong> · {jobsDone.map((job) => jobs[job].title).join(' + ')}</li>)}
+        </ol>}
       </div>
     </section>
   )

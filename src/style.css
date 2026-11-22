@@ -571,3 +571,17 @@ a.course-stop:hover { background: #32598b65; }
 .relay-replay { margin-top: 1rem; padding-top: .55rem; border-top: 1px solid var(--color-line); }
 .relay-event { margin-top: .65rem; }
 .relay-event p + p { margin-top: .3rem; color: #edf4ff; }
+
+.worker-shift { margin-top: .85rem; padding: .75rem; border-radius: .65rem; border: 1px solid #6484bd; background: #172e56; }
+.worker-shift h4 { color: #ffe29a; font-weight: 800; }
+.worker-lanes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; margin-top: .45rem; }
+.worker-lane { position: relative; overflow: hidden; border: 1px solid #5878aa; border-radius: .5rem; padding: .55rem; background: #102344; }
+.worker-lane strong { display: block; color: #bddcfc; font-size: .78rem; }
+.worker-lane p { font-size: .85rem; overflow-wrap: anywhere; }
+.worker-lane > span { position: absolute; height: 3px; width: 100%; bottom: 0; left: 0; background: #ffda72; transform-origin: left; }
+@media (prefers-reduced-motion: no-preference) {
+  .worker-lane > span { animation: worker-progress .85s ease-out both; }
+}
+@keyframes worker-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.schedule-tray .decision-tile:disabled { opacity: .64; cursor: default; }
+.worker-history { display: grid; gap: .3rem; color: #c3efcf; font-size: .82rem; }

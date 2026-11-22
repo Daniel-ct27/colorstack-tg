@@ -91,9 +91,9 @@ export function MissingCommit({ solved, onSolve, progressNotice }: MissingCommit
         </section>
         <form className="mt-4" onSubmit={submit}>
           <label className="block text-sm font-semibold" htmlFor="lab-command">Commands</label>
-          <p id="command-help" className="mt-1 text-sm text-muted">One command per line. Run the batch in order, or use Ctrl/⌘ + Enter.</p>
+          <p id="command-help" className="mt-1 text-sm text-muted">Press Enter to run. Use Shift+Enter to add another command.</p>
           <textarea id="lab-command" className="mt-2 w-full rounded border border-line bg-navy px-3 py-2 font-mono" rows={4} value={command} onChange={(event) => setCommand(event.target.value)} onKeyDown={(event) => {
-            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+            if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
               event.preventDefault()
               event.currentTarget.form?.requestSubmit()
             }

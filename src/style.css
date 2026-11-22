@@ -150,3 +150,9 @@ body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM
   .mission-path a, .primary-link { transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease; }
   .primary-link:hover { transform: translateY(-2px); }
 }
+
+.scene-note { max-width: 69ch; padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid var(--color-line); border-radius: 1rem; background: #142540; }
+.scene-note h2, .scene-note h3 { font-family: var(--heading); font-weight: 800; }
+.scene-note h2 { font-size: clamp(1.35rem, 4vw, 2rem); line-height: 1.12; }
+.scene-note h3 { margin-top: 1.2rem; font-size: 1.05rem; color: #ffe19b; }
+.scene-note p { margin-top: .45rem; color: var(--color-muted); line-height: 1.62; }

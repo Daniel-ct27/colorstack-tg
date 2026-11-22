@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { chapters, missionsForChapter, type Chapter } from './missions.ts'
 import { MissingCommit } from './MissingCommit.tsx'
-import { chapterScenes, evidenceNotes } from './story.ts'
+import { chapterScenes, evidenceNotes, missionScenes } from './story.ts'
 import { HiddenSystem } from './HiddenSystem.tsx'
 import { stageStatus } from './progress.ts'
 import './style.css'
@@ -75,7 +75,17 @@ function App() {
                 </div>
               ) : (
                 <>
-                  <p className="max-w-prose leading-relaxed text-muted">{evidenceNotes[mission.id] ?? mission.briefing}</p>
+                  {!missionScenes[mission.id] && <p className="max-w-prose leading-relaxed text-muted">{evidenceNotes[mission.id] ?? mission.briefing}</p>}
+                  {missionScenes[mission.id] && (
+                    <article className="scene-note" aria-labelledby="scene-title">
+                      <h2 id="scene-title">{missionScenes[mission.id]?.title}</h2>
+                      <p>{missionScenes[mission.id]?.opening}</p>
+                      <h3>Your assignment</h3>
+                      <p>{evidenceNotes[mission.id] ?? mission.briefing}</p>
+                      <h3>What to carry forward</h3>
+                      <p>{missionScenes[mission.id]?.handoff}</p>
+                    </article>
+                  )}
                   {mission.id === 1 ? (
                     <HiddenSystem solved={completed.includes(1)} onSolve={() => recordSolve(1)} />
                   ) : mission.id === 2 ? (

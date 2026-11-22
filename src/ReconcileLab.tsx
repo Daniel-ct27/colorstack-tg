@@ -1,41 +1,58 @@
 import { useState } from 'react'
 import { checkReconciliation, pairs } from './reconcile.ts'
 
+const destinations = [
+  ['archive', 'Send archive copy to dashboard'],
+  ['dashboard', 'Send dashboard copy to archive'],
+  ['skip', 'Leave both in place'],
+  ['review', 'Send to review desk'],
+] as const
+
 export function ReconcileLab({ solved, onSolve }: { solved: boolean; onSolve: () => void }) {
   const [actions, setActions] = useState<Record<string, string>>({})
+  const [selected, setSelected] = useState(0)
   const [results, setResults] = useState<ReturnType<typeof checkReconciliation>>()
+  const { id, archive, dashboard } = pairs[selected]
+  const result = results?.[selected]
+
+  function route(value: string) {
+    setActions({ ...actions, [id]: value })
+    setResults(undefined)
+  }
+
+  function replay() {
+    const next = checkReconciliation(actions)
+    setResults(next)
+    const firstFailed = next.findIndex(({ passed }) => !passed)
+    if (firstFailed >= 0) setSelected(firstFailed)
+    else if (!solved) onSolve()
+  }
 
   return (
     <section className="lab-workbench" aria-labelledby="reconcile-title">
       <div className="lab-brief">
         <p className="eyebrow">Distributed state</p>
-        <h2 id="reconcile-title">Reconcile the two records.</h2>
-        <p className="lab-lede">Repair the staggered copies without resurrecting a withdrawn job or overwriting a conflict. Neither service wins every time.</p>
-        <details className="lab-hint" open><summary>Recovery policy</summary><p>Higher revisions supersede lower ones, even when the new state is withdrawn. If revisions match but states differ, hold the job for review. Leave identical records alone.</p></details>
+        <h2 id="reconcile-title">Clear the reconciliation desk.</h2>
+        <p className="lab-lede">Four job tickets are waiting for a decision. Compare both copies before you send each ticket on its way.</p>
+        <details className="lab-hint" open><summary>Desk policy</summary><p>A higher revision replaces a lower one, even if it withdraws the job. Conflicting states at the same revision go to review. Identical copies stay where they are.</p></details>
       </div>
       <div className="lab-console">
-        <div className="lab-console-bar"><h3>Reconciliation queue</h3></div>
-        <form className="mt-4 grid gap-3" onSubmit={(event) => {
-          event.preventDefault()
-          const next = checkReconciliation(actions)
-          setResults(next)
-          if (next.every(({ passed }) => passed) && !solved) onSolve()
-        }}>
-          {pairs.map(({ id, archive, dashboard }, index) => (
-            <fieldset className="rounded border border-line bg-navy p-3" key={id}>
-              <legend className="px-1 font-mono text-gold">{id}</legend>
-              <p className="text-sm">Archive: r{archive[0]} · {archive[1]}<br />Dashboard: r{dashboard[0]} · {dashboard[1]}</p>
-              <label className="mt-2 grid gap-1 text-sm">Recovery action
-                <select className="rounded border border-line bg-panel p-2" value={actions[id] ?? ''} required onChange={(event) => { setActions({ ...actions, [id]: event.target.value }); setResults(undefined) }}>
-                  <option value="">Choose an action</option><option value="archive">Copy archive to dashboard</option><option value="dashboard">Copy dashboard to archive</option><option value="skip">Leave both alone</option><option value="review">Hold for review</option>
-                </select>
-              </label>
-              {results && <p className={results[index].passed ? 'lab-pass mt-2' : 'lab-fail mt-2'}>{results[index].passed ? 'PASS' : results[index].feedback}</p>}
-            </fieldset>
-          ))}
-          <button className="lab-primary justify-self-start">Dry-run reconciliation</button>
-        </form>
-        <p className="lab-result" role="status">{results ? `${results.filter(({ passed }) => passed).length} of ${pairs.length} decisions verified.` : ''}</p>
+        <div className="lab-console-bar"><h3>Reconciliation desk</h3><span className="lab-label">{Object.keys(actions).length}/{pairs.length} routed</span></div>
+        <div className="reconcile-queue" role="group" aria-label="Job tickets">
+          {pairs.map(({ id: ticket }, index) => <button type="button" className="filter" aria-pressed={selected === index} key={ticket} data-routed={Boolean(actions[ticket])} onClick={() => setSelected(index)}>{ticket}{actions[ticket] ? ' ✓' : ''}</button>)}
+        </div>
+        <section className="reconcile-card" aria-label={`Compare copies of ${id}`}>
+          <div className="reconcile-copies">
+            <div><small>Archive · r{archive[0]}</small><strong>{archive[1]}</strong></div>
+            <div><small>Dashboard · r{dashboard[0]}</small><strong>{dashboard[1]}</strong></div>
+          </div>
+          <div className="decision-tiles" role="group" aria-label={`Route ${id}`}>
+            {destinations.map(([value, label]) => <button key={value} type="button" className="decision-tile" aria-pressed={actions[id] === value} onClick={() => route(value)}>{label}</button>)}
+          </div>
+          {result && <p className={result.passed ? 'lab-pass mt-2' : 'lab-fail mt-2'}>{result.passed ? 'This ticket is routed correctly.' : result.feedback}</p>}
+        </section>
+        <button type="button" className="lab-primary" disabled={Object.keys(actions).length !== pairs.length} onClick={replay}>Rehearse the handoff</button>
+        <p className="lab-result" role="status">{results ? `${results.filter(({ passed }) => passed).length} of ${pairs.length} tickets routed safely.` : ''}</p>
       </div>
     </section>
   )

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { DecisionTiles } from './DecisionTiles.tsx'
 import { checkGateway, gatewaySamples } from './gateway.ts'
 
 const fields = {
@@ -62,18 +63,13 @@ export function GatewayLab({ solved, onSolve }: { solved: boolean; onSolve: () =
               <legend>{title}</legend>
               <p className="mb-2 text-sm text-muted">{direction}</p>
               {keys.map((key) => (
-                <label key={key} className="gateway-pair">
-                  <code>{fields[key].target}</code><span aria-hidden="true">↔</span>
-                  <select value={config[key]} onChange={(event) => { setConfig({ ...config, [key]: event.target.value }); setResult(undefined) }} required>
-                    <option value="">Choose a match</option>
-                    {fields[key].choices.map((choice) => <option key={choice}>{choice}</option>)}
-                  </select>
-                </label>
+                <DecisionTiles key={key} title={fields[key].target} choices={fields[key].choices.map((choice) => [choice, choice] as const)}
+                  value={config[key]} onChange={(value) => { setConfig({ ...config, [key]: value }); setResult(undefined) }} />
               ))}
             </fieldset>
           ))}
           <div className="flex flex-wrap items-center gap-3">
-            <button className="lab-primary" type="submit">Test my adapter</button>
+            <button className="lab-primary" type="submit" disabled={!Object.values(config).every(Boolean)}>Run the live queue</button>
             <span className="text-sm text-muted">{Object.values(config).filter(Boolean).length} of {Object.keys(fields).length} connected</span>
           </div>
         </form>

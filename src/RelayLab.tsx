@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DecisionTiles } from './DecisionTiles.tsx'
 import { rehearseRelay } from './relay.ts'
 
 const policyFields = [
@@ -29,14 +30,12 @@ export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => 
           if (next.every(({ passed }) => passed) && !solved) onSolve()
         }}>
           {policyFields.map(({ key, title, choices }) => (
-            <label className="grid gap-1 text-sm font-semibold" key={key}>{title}
-              <select className="rounded border border-line bg-navy px-3 py-2" required value={policy[key]} onChange={(event) => { setPolicy({ ...policy, [key]: event.target.value }); setResults(undefined) }}>
-                <option value="">Choose a policy</option>
-                {choices.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-              </select>
-            </label>
+            <DecisionTiles key={key} title={title} choices={choices} value={policy[key]} onChange={(value) => {
+              setPolicy({ ...policy, [key]: value })
+              setResults(undefined)
+            }} />
           ))}
-          <button className="lab-primary justify-self-start">Replay the exchange</button>
+          <button className="lab-primary justify-self-start" disabled={!Object.values(policy).every(Boolean)}>Replay the exchange</button>
         </form>
         <div role="status" className="mt-4 grid gap-2">
           {results?.map(({ label, passed, detail }) => <div key={label}><strong className={passed ? 'lab-pass' : 'lab-fail'}>{passed ? 'PASS' : 'FAIL'} · {label}</strong><pre className="mt-1 whitespace-pre-wrap text-sm text-muted">{detail}</pre></div>)}

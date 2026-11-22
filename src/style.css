@@ -74,3 +74,29 @@ body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM
   .hero::after { background: linear-gradient(0deg, #071328 4%, #071328df 49%, #07132842 100%); }
   .hero { align-items: end; }
 }
+
+.lab-workbench { display: grid; align-items: start; grid-template-columns: minmax(16rem, 1fr) minmax(0, 2.15fr); gap: clamp(1rem, 3vw, 2rem); margin-top: 1.75rem; }
+.lab-brief { padding: clamp(1rem, 3vw, 1.65rem); background: linear-gradient(145deg, #172e52, #101f38 76%); border: 1px solid var(--color-line); border-top: 3px solid var(--color-gold); }
+.lab-brief h2 { margin-top: .45rem; max-width: 15ch; font: 800 clamp(2rem, 4vw, 3.25rem)/.96 var(--display); }
+.lab-lede { margin: .9rem 0 1.35rem; line-height: 1.55; color: var(--color-muted); }
+.lab-label { font: 600 .73rem/1.3 var(--font-mono); letter-spacing: .065em; text-transform: uppercase; color: var(--color-muted); }
+.lab-rules { margin-top: .45rem; }
+.lab-rules li { display: flex; gap: .55rem; padding-block: .42rem; border-bottom: 1px solid var(--color-line); }
+.lab-rules li::before { content: ''; flex: 0 0 .38rem; height: .38rem; margin-top: .58rem; border: 1px solid var(--color-gold); }
+.lab-hint { margin-top: 1rem; color: var(--color-gold); }
+.lab-hint summary { cursor: pointer; font-weight: 600; }
+.lab-hint p { margin-top: .5rem; color: var(--color-muted); }
+.lab-result { color: var(--color-gold); font-weight: 700; }
+.lab-result:not(:empty) { margin-top: 1rem; }
+.lab-console { min-width: 0; padding: clamp(.85rem, 2vw, 1.4rem); border: 1px solid var(--color-line); background: #0b1930; }
+.lab-console-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; padding-bottom: .8rem; border-bottom: 1px solid var(--color-line); }
+.lab-console-bar h3 { font: 700 1.65rem/1 var(--display); }
+.lab-controls { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .85rem; }
+.lab-primary { min-height: 2.65rem; padding: .5rem .9rem; border-radius: .2rem; background: var(--color-gold); color: var(--color-navy); font-weight: 700; cursor: pointer; }
+.lab-primary:hover { background: #ffe378; }
+.lab-output { min-height: 9rem; }
+.lab-pass { color: #a5ecbe; }
+.lab-fail { color: #ffb3a6; }
+@media (max-width: 760px) {
+  .lab-workbench { grid-template-columns: minmax(0, 1fr); }
+}

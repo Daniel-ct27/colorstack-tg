@@ -14,6 +14,7 @@ import { GatewayLab } from './GatewayLab.tsx'
 import { SignalsLab } from './SignalsLab.tsx'
 import { RelayLab } from './RelayLab.tsx'
 import { EncodingLab } from './EncodingLab.tsx'
+import { ReconcileLab } from './ReconcileLab.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -139,6 +140,8 @@ function App() {
                     <RelayLab solved={completed.includes(6) || previewSolved === 6} onSolve={() => recordSolve(6)} />
                   ) : mission.id === 7 ? (
                     <EncodingLab solved={completed.includes(7) || previewSolved === 7} onSolve={() => recordSolve(7)} />
+                  ) : mission.id === 9 ? (
+                    <ReconcileLab solved={completed.includes(9) || previewSolved === 9} onSolve={() => recordSolve(9)} />
                   ) : mission.id === 8 ? (
                     <RecoveryJobs solved={completed.includes(8) || previewSolved === 8} onSolve={() => recordSolve(8)} />
                   ) : (

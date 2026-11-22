@@ -8,7 +8,8 @@ const clues = [
   { id: 5, name: 'Showcase failure window', detail: 'Run J-61 was complete at 21:39 and incomplete by 21:43. Inspect service activity between those dashboard refreshes.' },
   { id: 6, name: 'Delivery policy', detail: 'Wait for the commit acknowledgement. Retry after its deadline using the original delivery ID.' },
   { id: 7, name: 'Restart note', detail: 'Mount snapshot before export.' },
-  { id: 8, name: 'Recovery job order', detail: 'Mount the snapshot, rebuild the export, then refresh the dashboard.' },
+  { id: 9, name: 'Reconciliation policy', detail: 'Preserve newer revisions and withdrawals. Leave identical copies alone and hold equal-revision conflicts.' },
+  { id: 8, name: 'Recovery job order', detail: 'Round 1: snapshot and manifest. Round 2: export and cache. Round 3: dashboard and archive.' },
 ]
 
 export function EvidenceBoard({ completed }: { completed: readonly number[] }) {

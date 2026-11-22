@@ -1,51 +1,50 @@
 import { useState } from 'react'
+import { checkSchedule, jobs, type Job } from './recovery-plan.ts'
 
-const jobs = {
-  refresh: { title: 'Refresh the dashboard', needs: 'A rebuilt export' },
-  mount: { title: 'Mount the snapshot', needs: 'No prerequisite' },
-  rebuild: { title: 'Rebuild the export', needs: 'A mounted snapshot' },
-}
+const jobIds = Object.keys(jobs) as Job[]
+const roundNumbers = [1, 2, 3] as const
 
 export function RecoveryJobs({ solved, onSolve }: { solved: boolean; onSolve: () => void }) {
-  const [order, setOrder] = useState<(keyof typeof jobs)[]>(['refresh', 'mount', 'rebuild'])
+  const [placements, setPlacements] = useState<Partial<Record<Job, number>>>({})
   const [feedback, setFeedback] = useState('')
-
-  function move(index: number, offset: number) {
-    const updated = [...order]
-    const target = index + offset
-    const job = updated[index]
-    updated[index] = updated[target]
-    updated[target] = job
-    setOrder(updated)
-    setFeedback('')
-  }
+  const [passed, setPassed] = useState(false)
+  const rounds = roundNumbers.map((round) => jobIds.filter((id) => placements[id] === round))
 
   return (
     <section className="lab-workbench" aria-labelledby="recovery-title">
       <div className="lab-brief">
-        <p className="eyebrow">Your objective</p>
-        <h2 id="recovery-title">Unstick the job queue.</h2>
-        <p className="lab-lede">Move the cards into a runnable sequence. Each job must get what it needs from an earlier step.</p>
+        <p className="eyebrow">Dependency scheduling</p>
+        <h2 id="recovery-title">Finish in three rounds.</h2>
+        <p className="lab-lede">Two workers are available each round. Every job takes one full round. A job can start only after all of its prerequisites finish in earlier rounds.</p>
+        <p className="text-sm text-muted">The restart note is still useful. Mount the snapshot before you rebuild the export.</p>
       </div>
       <div className="lab-console">
-        <div className="lab-console-bar"><h3>Recovery dependency board</h3></div>
-        <ol className="dependency-jobs">
-          {order.map((id, index) => (
+        <div className="lab-console-bar"><h3>Recovery job board</h3></div>
+        <ul className="dependency-jobs schedule-jobs">
+          {jobIds.map((id) => (
             <li key={id}>
-              <span>{index + 1}</span>
-              <div><strong>{jobs[id].title}</strong><p className="text-sm text-muted">{jobs[id].needs}</p></div>
-              <button className="filter" type="button" aria-label={`Move ${jobs[id].title} up`} disabled={index === 0} onClick={() => move(index, -1)}>↑</button>
-              <button className="filter" type="button" aria-label={`Move ${jobs[id].title} down`} disabled={index === order.length - 1} onClick={() => move(index, 1)}>↓</button>
+              <div><strong>{jobs[id].title}</strong><p className="text-sm text-muted">{jobs[id].needs.length ? 'Needs: ' + jobs[id].needs.map((job) => jobs[job].title).join(', ') : 'No prerequisites'}</p></div>
+              <select className="rounded border border-line bg-navy p-2" aria-label={`Round for ${jobs[id].title}`} value={placements[id] ?? ''} onChange={(event) => {
+                setPlacements({ ...placements, [id]: Number(event.target.value) || undefined })
+                setFeedback('')
+                setPassed(false)
+              }}>
+                <option value="">Unassigned</option>
+                {roundNumbers.map((round) => <option key={round} value={round}>Round {round}</option>)}
+              </select>
             </li>
           ))}
-        </ol>
+        </ul>
+        <div className="lab-controls" aria-label="Worker usage">
+          {rounds.map((round, index) => <span key={index} className={round.length > 2 ? 'lab-fail' : 'text-muted'}>Round {index + 1} · {round.length}/2 workers</span>)}
+        </div>
         <button className="lab-primary mt-4" type="button" onClick={() => {
-          if (order.join() === 'mount,rebuild,refresh') {
-            setFeedback(solved ? 'Correct. This case is already solved.' : 'Job order verified. Recovery can begin.')
-            if (!solved) onSolve()
-          } else { setFeedback('A job starts before its prerequisite is ready. Check what each card needs.') }
-        }}>Test job order</button>
-        <p className="lab-result" role="status">{feedback}</p>
+          const error = checkSchedule(rounds)
+          setPassed(error === null)
+          setFeedback(error ?? 'All six jobs finished within three rounds.')
+          if (error === null && !solved) onSolve()
+        }}>Run schedule</button>
+        <p className={passed ? 'lab-result' : 'lab-fail mt-3'} role="status">{feedback}</p>
       </div>
     </section>
   )

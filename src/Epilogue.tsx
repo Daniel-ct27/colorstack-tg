@@ -21,6 +21,16 @@ export function Epilogue({ cleared, mapUrl, artUrl }: { cleared: number; mapUrl:
             <p>You followed every clue and brought the showcase back online. We hope you get some good food, real rest, and time with the people who make you feel at home.</p>
             <p><strong>Good luck on your finals.</strong> Take them one problem at a time, and remember you’ve got a community cheering for you.</p>
             <p className="epilogue-signature">With love,<br />The ColorStack E-Board at Fisk University</p>
+            <div className="epilogue-social">
+              <div>
+                <h2>Share your finish</h2>
+                <p>Post a screenshot of your finish and tag @colorstack_fisk for a chance to be featured.</p>
+              </div>
+              <a href="https://www.instagram.com/colorstack_fisk/" target="_blank" rel="noreferrer">
+                <img src={artUrl('instagram.svg')} width="21" height="21" alt="" />
+                <span>@colorstack_fisk on Instagram</span>
+              </a>
+            </div>
           </div>
           <div className="epilogue-photos" aria-label="ColorStack at Fisk memories">
             {photos.map(({ file, alt, caption }) => <figure key={file}>

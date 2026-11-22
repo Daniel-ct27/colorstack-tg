@@ -605,3 +605,11 @@ a.course-stop:hover { background: #32598b65; }
 .bonus-checkpoint .primary-link { margin: 0; }
 .bonus-locked { color: #d5e4fb; font-size: .88rem; }
 @media(max-width: 620px) { .bonus-checkpoint { grid-template-columns: auto minmax(0,1fr); } .bonus-checkpoint > :last-child { grid-column: 2; justify-self: start; } }
+
+.epilogue-social { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1rem; margin-top: 1.4rem; padding-top: 1.1rem; border-top: 1px dashed #ac7b40; }
+.epilogue-social h2 { color: #21487f; font: 850 1.25rem/1.18 var(--heading); }
+.epilogue-social p { margin-top: .35rem; }
+.epilogue-social a { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem .7rem; border: 1px solid #ad7391; border-radius: .55rem; color: #431f43; background: #ffe7ef; font-size: .9rem; font-weight: 800; }
+.epilogue-social a:hover { background: #f7d3e5; }
+.epilogue-social a:focus-visible { outline-color: #593258; }
+.epilogue-social img { flex: 0 0 21px; }

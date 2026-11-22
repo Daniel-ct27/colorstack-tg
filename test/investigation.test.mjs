@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { rehearseRelay } from '../src/relay.ts'
-import { decodeLayer, restartNote, sealedNote } from '../src/encoding.ts'
+import { archiveCopies, decodeLayer, identifyArchive, restartNote, sealedNote } from '../src/encoding.ts'
 
 test('relay recovery handles missing data and an acknowledgement lost after a write', () => {
   const policy = { retry: 'timeout', identity: 'reuse', finish: 'commit', timeoutTicks: '4' }
@@ -24,4 +24,13 @@ test('a short deadline retries a healthy write and a long one misses the recover
   assert.equal(rehearseRelay({ ...policy, timeoutTicks: '2' })[3].passed, false)
   assert.match(rehearseRelay({ ...policy, timeoutTicks: '8' })[1].detail, /cutoff/)
   assert.equal(rehearseRelay({ ...policy, timeoutTicks: '8' })[1].passed, false)
+})
+
+test('a plausible alternate note decodes but cannot be sent under the incident tag', () => {
+  const amber = decodeLayer(decodeLayer(decodeLayer(archiveCopies.amber, 'hex'), 'url'), 'reverse')
+  const blue = decodeLayer(decodeLayer(decodeLayer(archiveCopies.blue, 'hex'), 'base64'), 'reverse')
+  const values = { amber, blue }
+  assert.equal(identifyArchive(values, ['blue'], 'blue').passed, false)
+  assert.equal(identifyArchive(values, ['amber', 'blue'], 'amber').passed, false)
+  assert.equal(identifyArchive(values, ['amber', 'blue'], 'blue').passed, true)
 })

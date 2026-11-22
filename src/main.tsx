@@ -6,6 +6,7 @@ import { chapterScenes, evidenceNotes, missionScenes } from './story.ts'
 import { HiddenSystem } from './HiddenSystem.tsx'
 import { stageStatus } from './progress.ts'
 import { CampusBackdrop } from './CampusBackdrop.tsx'
+import { TrailMascot } from './TrailMascot.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -35,6 +36,7 @@ function App() {
     }
   })
   const [progressNotice, setProgressNotice] = useState('')
+  const [justSolved, setJustSolved] = useState<number | null>(null)
   const displayed = missionsForChapter(chapter)
   const allMissions = missionsForChapter('All')
   const current = allMissions.find(({ id }) => stageStatus(id, completed) === 'current')
@@ -44,6 +46,7 @@ function App() {
     if (stageStatus(id, completed) !== 'current') return
     const updated = [...completed, id]
     setCompleted(updated)
+    setJustSolved(id)
     try {
       localStorage.setItem(progressKey, JSON.stringify(updated))
     } catch {
@@ -190,6 +193,7 @@ function App() {
       </>
       )}
 
+      <TrailMascot solvedStage={justSolved} />
       <footer className="site-footer">
         <p>ColorStack at Fisk University · A fictional campus mystery</p>
         <details>

@@ -631,3 +631,8 @@ a.course-stop:hover { background: #32598b65; }
 .demo-note { margin-top: .8rem; padding: .75rem; border-radius: .45rem; color: #392815; background: #ffe7ad; }
 .demo-crates { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .4rem; margin-top: .9rem; }
 .demo-crate span { display: block; color: inherit; font-size: 1.4rem; }
+
+.demo-helpers { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .5rem; margin-top: .8rem; }
+.demo-helpers .cast-sprite { width: min(3.5rem,100%); }
+.game-popup[data-kind="tutorial"] { width: min(calc(100% - 1.5rem),27rem); }
+.game-popup[data-kind="tutorial"] h2 { font-size: clamp(1.45rem,5vw,2.15rem); }

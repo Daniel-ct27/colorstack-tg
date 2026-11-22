@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 
 export function GamePopup({ kind, title, close, children }: {
-  kind: 'briefing' | 'clear'
+  kind: 'briefing' | 'clear' | 'tutorial'
   title: string
   close: () => void
   children: ReactNode
@@ -22,7 +22,7 @@ export function GamePopup({ kind, title, close, children }: {
   return (
     <dialog ref={dialog} className="game-popup" data-kind={kind} aria-labelledby="game-popup-title" onCancel={(event) => { event.preventDefault(); close() }}>
       <header>
-        <p>{kind === 'briefing' ? 'Mission briefing' : 'Checkpoint result'}</p>
+        <p>{kind === 'tutorial' ? 'Practice guide' : kind === 'briefing' ? 'Mission briefing' : 'Checkpoint result'}</p>
         <button type="button" onClick={close} aria-label="Close popup" autoFocus>×</button>
       </header>
       <div className="game-popup-body">

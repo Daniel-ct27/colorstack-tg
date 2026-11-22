@@ -68,10 +68,10 @@ function App() {
     <main className="shell" id="top">
       <header className="masthead">
         <a className="identity" href="/">
-          <img src="/art/fisk-colorstack.jpg" width="52" height="52" alt="" />
+          <img src="/art/fisk-colorstack.jpg" width="128" height="128" alt="" />
           <span><strong>ColorStack</strong><small>Fisk University</small></span>
         </a>
-        <a className="nav-link" href="/#missions">Case files <span aria-hidden="true">↗</span></a>
+        <a className="nav-link masthead-cases" href="/#missions">Case files <span aria-hidden="true">↗</span></a>
       </header>
 
       {path !== '/' ? (

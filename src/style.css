@@ -161,7 +161,7 @@ body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM
 .nav-link { color: #efedff; font-size: .98rem; font-weight: 650; }
 .nav-link:hover { color: #ffe19b; text-decoration: underline; text-underline-offset: .22em; }
 .eyebrow { color: #ffe19b; font-size: .94rem; font-weight: 600; }
-.identity img { width: clamp(4.4rem, 11vw, 6.4rem); height: auto; }
+.identity img { width: clamp(5.25rem, 12vw, 8rem); height: auto; }
 .masthead { padding-block: .75rem; }
 body { background: radial-gradient(ellipse at top right, #232346, transparent 42rem), #0b1528; }
 .hero-photo, .chapter-scene img { transform: scale(1.05); }
@@ -260,3 +260,12 @@ body { background: #131d31; }
 .repo-node .repo-status { padding: .15rem .5rem; border-radius: 1rem; background: #101e34; color: #d4e2f5; font-size: .75rem; font-weight: 600; white-space: nowrap; }
 .repo-board [data-state="inspected"] .repo-status { color: #ffe292; }
 .repo-board [data-state="reverted"] .repo-status { color: #a5ecbe; }
+
+.masthead .identity strong { font-size: clamp(1.12rem, 2.5vw, 1.6rem); }
+.masthead .masthead-cases { padding: .55rem .85rem; border: 1px solid #5a7097; border-radius: .65rem; font-size: clamp(1rem, 2.6vw, 1.25rem); white-space: nowrap; }
+.masthead .masthead-cases:hover { background: #273d61; }
+@media (max-width: 390px) {
+  .masthead { gap: .5rem; }
+  .masthead .identity { gap: .4rem; }
+  .masthead .masthead-cases { padding-inline: .45rem; }
+}

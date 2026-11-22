@@ -27,6 +27,17 @@ if (path !== '/') {
 }
 
 function App() {
+  const [playtest, setPlaytest] = useState(() => {
+    if (!import.meta.env.DEV) return false
+    try { return sessionStorage.getItem('colorstack:playtest') !== 'off' }
+    catch { return true }
+  })
+
+  function togglePlaytest() {
+    setPlaytest(!playtest)
+    try { sessionStorage.setItem('colorstack:playtest', playtest ? 'off' : 'on') }
+    catch { /* The setting still works on this page. */ }
+  }
   const [chapter, setChapter] = useState<Chapter | 'All'>('All')
   const [completed, setCompleted] = useState<number[]>(() => {
     try {
@@ -73,6 +84,12 @@ function App() {
         </a>
         <a className="nav-link masthead-cases" href="/#missions">Case files <span aria-hidden="true">↗</span></a>
       </header>
+      {import.meta.env.DEV && (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded border border-line bg-panel px-4 py-2">
+          <p className="text-sm text-muted">{playtest ? 'Playtest mode · All case files are open. Out-of-order solves do not change campaign progress.' : 'Campaign mode · Solve each case to unlock the next.'}</p>
+          <button className="filter text-sm" type="button" aria-pressed={playtest} onClick={togglePlaytest}>Playtest mode</button>
+        </div>
+      )}
 
       {path !== '/' ? (
         <section className="case-files" aria-labelledby="case-title">
@@ -81,7 +98,7 @@ function App() {
             <>
               <p className="eyebrow mt-5">{mission.chapter} · Stage {String(mission.id).padStart(2, '0')} · {mission.focus}</p>
               <div className="case-heading mt-2"><h1 id="case-title">{mission.title}</h1></div>
-              {stageStatus(mission.id, completed) === 'locked' ? (
+              {!playtest && stageStatus(mission.id, completed) === 'locked' ? (
                 <div className="stage-lock">
                   <h2 className="font-bold text-gold">Stage locked</h2>
                   <p className="mt-1 text-muted">Complete the earlier missions to open this case file.</p>
@@ -190,16 +207,16 @@ function App() {
                       <span className="stage-number"><span className="sr-only">Stage </span>{String(mission.id).padStart(2, '0')}</span>
                       <span><strong>{mission.title}</strong><small>{mission.focus}</small></span>
                       <span className="mission-action">
-                        {status === 'locked' ? 'Locked' : status === 'complete' ? 'Solved' : 'Play →'}
+                        {status === 'locked' ? (playtest ? 'Preview' : 'Locked') : status === 'complete' ? 'Solved' : 'Play →'}
                       </span>
                     </>
                   )
                   return (
                     <li key={mission.id}>
-                      {status === 'locked' ? (
+                      {status === 'locked' && !playtest ? (
                         <div className="mission" data-state={status}>{contents}</div>
                       ) : (
-                        <a className="mission" data-state={status} href={missionUrl(mission.id)} aria-current={status === 'current' ? 'step' : undefined}>{contents}</a>
+                        <a className="mission" data-state={status === 'locked' && playtest ? 'preview' : status} href={missionUrl(mission.id)} aria-current={status === 'current' ? 'step' : undefined}>{contents}</a>
                       )}
                     </li>
                   )
@@ -212,7 +229,7 @@ function App() {
       </>
       )}
 
-      <TrailMascot solvedStage={revealedSolve} activeStage={mission && stageStatus(mission.id, completed) === 'current' ? mission.id : undefined} />
+      <TrailMascot solvedStage={revealedSolve} activeStage={mission && (stageStatus(mission.id, completed) === 'current' || (playtest && !completed.includes(mission.id))) ? mission.id : undefined} />
       <footer className="site-footer">
         <p>ColorStack at Fisk University · A fictional campus mystery</p>
         <details>

@@ -106,9 +106,33 @@ function App() {
         </div>
       )}
 
+      {mission && (
+        <nav className="campaign-hud" aria-label="Campaign checkpoints">
+          <a className="hud-back" href="/#missions">← Course map</a>
+          <ol>
+            {allMissions.map(({ id, title }) => {
+              const status = stageStatus(id, completed)
+              const active = id === mission.id
+              const label = `Stage ${id}: ${title}${status === 'locked' ? (playtest ? ', preview' : ', locked') : status === 'complete' ? ', solved' : ''}`
+              return (
+                <li key={id} data-state={status}>
+                  {active ? (
+                    <span aria-current="step" aria-label={label}>{id}</span>
+                  ) : status !== 'locked' || playtest ? (
+                    <a href={missionUrl(id)} aria-label={label}>{status === 'complete' ? '✓' : id}</a>
+                  ) : (
+                    <span aria-label={label}>{id}</span>
+                  )}
+                </li>
+              )
+            })}
+          </ol>
+          <span className="hud-count">{completedCount}/{allMissions.length} cleared</span>
+        </nav>
+      )}
       {path !== '/' ? (
         <section className="case-files" aria-labelledby="case-title">
-          <a className="nav-link inline-block" href="/#missions">← All case files</a>
+          {!mission && <a className="nav-link inline-block" href="/#missions">← Course map</a>}
           {mission ? (
             <>
               <p className="eyebrow mt-5">{mission.chapter} · Stage {String(mission.id).padStart(2, '0')} · {mission.focus}</p>
@@ -184,17 +208,17 @@ function App() {
           <h1 id="title">CODE <em>HUNT</em></h1>
           <p className="case-name">Operation Lost Access</p>
           <p className="hero-story">On the night before Thanksgiving, the student team’s showcase system goes dark. The last report is missing jobs, the services disagree, and the team has left campus. Reconstruct what happened before the post-break demo.</p>
-          <a href="#missions" className="primary-link">Open the case files <span aria-hidden="true">↓</span></a>
+          <a href="#missions" className="primary-link">View course map <span aria-hidden="true">↓</span></a>
         </div>
       </section>
 
-      <section id="missions" className="case-files" aria-labelledby="mission-title">
+      <section id="missions" className="case-files game-map" aria-labelledby="mission-title">
         <div className="case-heading">
           <div>
             <p className="eyebrow">Operation Lost Access</p>
-            <h2 id="mission-title">Mission path</h2>
+            <h2 id="mission-title">Course map</h2>
           </div>
-          <p>Follow the evidence through three chapters. Solving your current stage opens the next case file.</p>
+          <p>Follow the route from Discovery to Recovery. Clear a checkpoint to open the next case.</p>
         </div>
         <div className="trail-summary">
           <div>
@@ -233,24 +257,24 @@ function App() {
                   {contact && <div className="chapter-contact"><strong>{contact.name}</strong><p>{contact.note}</p></div>}
                 </div>
               </div>
-              <ol className="mission-list mission-path">
+              <ol className="course-track">
                 {displayed.filter((mission) => mission.chapter === name).map((mission) => {
                   const status = stageStatus(mission.id, completed)
                   const contents = (
                     <>
                       <span className="stage-number"><span className="sr-only">Stage </span>{String(mission.id).padStart(2, '0')}</span>
-                      <span><strong>{mission.title}</strong><small>{mission.focus}</small></span>
+                      <strong className="course-title">{mission.title}</strong>
                       <span className="mission-action">
-                        {status === 'locked' ? (playtest ? 'Preview' : 'Locked') : status === 'complete' ? 'Solved' : 'Play →'}
+                        {status === 'locked' ? (playtest ? 'Preview' : 'Locked') : status === 'complete' ? 'Cleared' : 'Play →'}
                       </span>
                     </>
                   )
                   return (
                     <li key={mission.id}>
                       {status === 'locked' && !playtest ? (
-                        <div className="mission" data-state={status}>{contents}</div>
+                        <div className="course-stop" data-state={status}>{contents}</div>
                       ) : (
-                        <a className="mission" data-state={status === 'locked' && playtest ? 'preview' : status} href={missionUrl(mission.id)} aria-current={status === 'current' ? 'step' : undefined}>{contents}</a>
+                        <a className="course-stop" data-state={status === 'locked' && playtest ? 'preview' : status} href={missionUrl(mission.id)} aria-current={status === 'current' ? 'step' : undefined}>{contents}</a>
                       )}
                     </li>
                   )

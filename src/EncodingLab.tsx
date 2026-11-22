@@ -39,7 +39,7 @@ export function EncodingLab({ solved, onSolve }: { solved: boolean; onSolve: () 
           </li>)}
         </ol>
         <div className="lab-controls">
-          {tools.map(([action, label]) => <button className="filter" type="button" key={action} onClick={() => apply(action, label)} disabled={layers.length >= 8}>{label}</button>)}
+          {tools.map(([action, label]) => <button className="filter" type="button" data-crew-action key={action} onClick={() => apply(action, label)} disabled={layers.length >= 8}>{label}</button>)}
           <button className="filter" type="button" disabled={layers.length === 1} onClick={() => { setLayers(layers.slice(0, -1)); setFeedback('') }}>Undo</button>
         </div>
         <button type="button" className="lab-primary mt-4" onClick={() => {

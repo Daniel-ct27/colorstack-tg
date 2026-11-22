@@ -1,30 +1,30 @@
 import { useState } from 'react'
+import { crewCases, crewNames, type CrewId } from './crew-story.ts'
 
-const cast = [
-  { id: 'nia', name: 'Nia', line: 'Dispatch here. The mission briefing has my handoff if you need it.' },
-  { id: 'miles', name: 'Miles', line: 'I’m keeping the checklist. Any clues you earn will be on the evidence board.' },
-  { id: 'giblet', name: 'Giblet', line: 'Gobble! If you get stuck, tap me in the lower corner for a hint.' },
-  { id: 'bulldog', name: 'Fisk Bulldog', line: 'Woof! Keep going. The showcase crew is rooting for you.' },
-] as const
+const cast = Object.keys(crewNames) as CrewId[]
 
-export function ArenaCast() {
-  const [selected, setSelected] = useState<(typeof cast)[number]>()
+export function ArenaCast({ stage, actionCount }: { stage: number; actionCount: number }) {
+  const [selection, setSelection] = useState<{ id: CrewId; atAction: number }>()
   const [reaction, setReaction] = useState(0)
+  const scene = crewCases[stage]
+  const reactingToAction = actionCount > 0 && selection?.atAction !== actionCount
+  const selected = reactingToAction ? scene?.action.speaker : selection?.id ?? scene?.lead
+  const line = reactingToAction ? scene?.action.text : selected && scene?.lines[selected]
 
   return (
     <aside className="arena-cast" aria-label="Showcase crew">
       <div className="cast-stage">
         {cast.map((member) => (
-          <button className="cast-member" type="button" key={member.id} data-sprite={member.id} aria-pressed={selected?.id === member.id} onClick={() => {
-            setSelected(member)
+          <button className="cast-member" type="button" key={member} data-sprite={member} aria-pressed={selected === member} onClick={() => {
+            setSelection({ id: member, atAction: actionCount })
             setReaction((current) => current + 1)
           }}>
-            <span className="cast-sprite" key={selected?.id === member.id ? reaction : 0} data-reacting={selected?.id === member.id} aria-hidden="true" />
-            <span className="cast-name">{member.name}</span>
+            <span className="cast-sprite" key={selected === member ? `${actionCount}:${reaction}` : "idle"} data-reacting={selected === member && (actionCount > 0 || reaction > 0)} aria-hidden="true" />
+            <span className="cast-name">{crewNames[member]}</span>
           </button>
         ))}
       </div>
-      <p className="cast-dialogue" role="status">{selected ? `${selected.name}: ${selected.line}` : 'Tap a character to get a reaction.'}</p>
+      <p className="cast-dialogue" role="status">{selected && line ? <><strong>{crewNames[selected]}</strong> · {line}</> : null}</p>
     </aside>
   )
 }

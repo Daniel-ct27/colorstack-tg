@@ -51,7 +51,7 @@ export function ReconcileLab({ solved, onSolve }: { solved: boolean; onSolve: ()
           </div>
           {result && <p className={result.passed ? 'lab-pass mt-2' : 'lab-fail mt-2'}>{result.passed ? 'This ticket is routed correctly.' : result.feedback}</p>}
         </section>
-        <button type="button" className="lab-primary" disabled={Object.keys(actions).length !== pairs.length} onClick={replay}>Rehearse the handoff</button>
+        <button type="button" className="lab-primary" data-crew-action disabled={Object.keys(actions).length !== pairs.length} onClick={replay}>Rehearse the handoff</button>
         <p className="lab-result" role="status">{results ? `${results.filter(({ passed }) => passed).length} of ${pairs.length} tickets routed safely.` : ''}</p>
       </div>
     </section>

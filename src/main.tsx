@@ -18,6 +18,7 @@ import { ReconcileLab } from './ReconcileLab.tsx'
 import { FinaleLab } from './FinaleLab.tsx'
 import { GamePopup } from './GamePopup.tsx'
 import { ArenaCast } from './ArenaCast.tsx'
+import { crewCases, crewNames } from './crew-story.ts'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -68,6 +69,8 @@ function App() {
   })
   const [progressNotice, setProgressNotice] = useState('')
   const [justSolved, setJustSolved] = useState<number | null>(null)
+  const [crewAction, setCrewAction] = useState(0)
+  const crewScene = mission ? crewCases[mission.id] : undefined
   const [briefingOpen, setBriefingOpen] = useState(false)
   const [dismissedClear, setDismissedClear] = useState<number | null>(null)
   const [revealedSolve, setRevealedSolve] = useState<number | null>(null)
@@ -159,7 +162,9 @@ function App() {
               ) : (
                 <>
                   <div className="arena-floor">
-                    <div className="arena-content">
+                    <div className="arena-content" onSubmitCapture={() => setCrewAction((count) => count + 1)} onClickCapture={(event) => {
+                      if (event.target instanceof Element && event.target.closest('[data-crew-action]')) setCrewAction((count) => count + 1)
+                    }}>
                   {mission.id === 1 ? (
                     <HiddenSystem solved={completed.includes(1) || previewSolved === 1} onSolve={() => recordSolve(1)} />
                   ) : mission.id === 2 ? (
@@ -184,7 +189,7 @@ function App() {
                     <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
                   )}
                     </div>
-                    <ArenaCast />
+                    <ArenaCast stage={mission.id} actionCount={crewAction} />
                   </div>
                   {previewSolved === mission.id && <p className="mt-4 text-sm text-gold">Playtest solve verified. Campaign progress is unchanged.</p>}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
@@ -297,7 +302,7 @@ function App() {
       {mission && briefingOpen && (
         <GamePopup kind="briefing" title={mission.title} close={() => setBriefingOpen(false)}>
           {missionScenes[mission.id] && <p>{missionScenes[mission.id]?.opening}</p>}
-          <h3>Your assignment</h3>
+          <h3>{crewScene ? `Assignment from ${crewNames[crewScene.lead]}` : "Your assignment"}</h3>
           <p>{evidenceNotes[mission.id] ?? mission.briefing}</p>
           {missionScenes[mission.id] && <><h3>What to carry forward</h3><p>{missionScenes[mission.id]?.handoff}</p></>}
           <div className="game-popup-actions"><button type="button" className="lab-primary" onClick={() => setBriefingOpen(false)}>Back to the mission</button></div>
@@ -307,6 +312,7 @@ function App() {
         <GamePopup kind="clear" title={mission.id === allMissions.length && justSolved === mission.id ? 'Campaign cleared!' : 'Checkpoint cleared!'} close={() => setDismissedClear(mission.id)}>
           <div className="clear-medal" aria-hidden="true">✓</div>
           <p>{mission.title}</p>
+          {crewScene && <p><strong>{crewNames[crewScene.lead]}:</strong> {crewScene.clear}</p>}
           <p>{previewSolved === mission.id ? 'Playtest complete. Campaign progress is unchanged.' : 'New clue pinned to the evidence board.'}</p>
           <div className="game-popup-actions">
             <button type="button" className="filter" onClick={() => setDismissedClear(mission.id)}>Keep playing</button>

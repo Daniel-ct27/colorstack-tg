@@ -39,7 +39,7 @@ export function FinaleLab({ solved, onSolve }: { solved: boolean; onSolve: () =>
         <ol className="mt-4 grid gap-2">
           {plan.map((id, index) => <li className="flex items-center justify-between gap-2 rounded border border-line bg-navy p-3" key={id}><span><strong className="text-gold">{index + 1}.</strong> {releaseActions[id]}</span><button type="button" className="filter text-sm" aria-label={`Remove ${releaseActions[id]}`} onClick={() => update(plan.filter((action) => action !== id))}>Remove</button></li>)}
         </ol>
-        <button className="lab-primary mt-4" type="button" disabled={!plan.length} onClick={rehearse}>Rehearse both outcomes</button>
+        <button className="lab-primary mt-4" type="button" data-crew-action disabled={!plan.length} onClick={rehearse}>Rehearse both outcomes</button>
         <div className="mt-4 grid gap-3" role="status">
           {results?.map(({ passed, trace }, index) => <div className="rounded border border-line p-3" key={index}>
             <h4 className={passed ? 'lab-pass font-bold' : 'lab-fail font-bold'}>{passed ? 'PASS' : 'FAIL'} · {index === 0 ? 'Clean report' : 'Mismatch during validation'}</h4>

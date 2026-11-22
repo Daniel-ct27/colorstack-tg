@@ -52,7 +52,7 @@ export function RecoveryJobs({ solved, onSolve }: { solved: boolean; onSolve: ()
           ))}
         </div>
         {selected && placements[selected] && <button className="filter mt-2" type="button" onClick={() => place()}>Return job to queue</button>}
-        <button className="lab-primary mt-4" type="button" onClick={() => {
+        <button data-crew-action className="lab-primary mt-4" type="button" onClick={() => {
           const error = checkSchedule(rounds)
           setPassed(error === null)
           setFeedback(error ?? 'All six jobs finished within three rounds.')

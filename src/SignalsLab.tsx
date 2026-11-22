@@ -35,7 +35,7 @@ export function SignalsLab({ solved, onSolve }: { solved: boolean; onSolve: () =
           {trail.filter(({ id }) => pins.includes(id)).map(({ id, time, result: note }) => (
             <button type="button" className="filter mt-2 w-full text-left text-sm" key={id} onClick={() => toggle(id)} aria-label={`Unpin ${time} ${note}`}>{time} · {note} <span aria-hidden="true">×</span></button>
           ))}
-          <button type="button" className="lab-primary mt-3" disabled={pins.length !== 2} onClick={verify}>Verify window</button>
+          <button type="button" className="lab-primary mt-3" data-crew-action disabled={pins.length !== 2} onClick={verify}>Verify window</button>
           <p className="lab-result" role="status">{result?.feedback}</p>
         </div>
       </div>

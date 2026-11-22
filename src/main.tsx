@@ -17,6 +17,7 @@ import { EncodingLab } from './EncodingLab.tsx'
 import { ReconcileLab } from './ReconcileLab.tsx'
 import { FinaleLab } from './FinaleLab.tsx'
 import { GamePopup } from './GamePopup.tsx'
+import { ArenaCast } from './ArenaCast.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -158,6 +159,7 @@ function App() {
               ) : (
                 <>
                   <div className="arena-floor">
+                    <div className="arena-content">
                   {mission.id === 1 ? (
                     <HiddenSystem solved={completed.includes(1) || previewSolved === 1} onSolve={() => recordSolve(1)} />
                   ) : mission.id === 2 ? (
@@ -181,6 +183,8 @@ function App() {
                   ) : (
                     <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
                   )}
+                    </div>
+                    <ArenaCast />
                   </div>
                   {previewSolved === mission.id && <p className="mt-4 text-sm text-gold">Playtest solve verified. Campaign progress is unchanged.</p>}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}

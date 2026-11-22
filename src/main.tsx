@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { chapters, missionsForChapter, type Chapter } from './missions.ts'
 import { MissingCommit } from './MissingCommit.tsx'
@@ -7,9 +7,16 @@ import './style.css'
 
 const progressKey = 'colorstack-code-hunt:missing-commit'
 
+const path = window.location.pathname
+const match = /^\/missions\/(\d{2})\/?$/.exec(path)
+const mission = match && missionsForChapter('All').find(({ id }) => id === Number(match[1]))
+
+if (path !== '/') {
+  document.title = mission ? `${mission.title} | ColorStack Code Hunt` : 'Case file not found | ColorStack Code Hunt'
+}
+
 function App() {
   const [chapter, setChapter] = useState<Chapter | 'All'>('All')
-  const [selected, setSelected] = useState<ReturnType<typeof missionsForChapter>[number]>()
   const [missingCommitSolved, setMissingCommitSolved] = useState(() => {
     try {
       return localStorage.getItem(progressKey) === 'solved'
@@ -18,7 +25,6 @@ function App() {
     }
   })
   const [progressNotice, setProgressNotice] = useState('')
-  const dialog = useRef<HTMLDialogElement>(null)
   const displayed = missionsForChapter(chapter)
 
   function recordMissingCommitSolve() {
@@ -30,20 +36,37 @@ function App() {
     }
   }
 
-  useLayoutEffect(() => {
-    if (selected) dialog.current?.showModal()
-  }, [selected])
-
   return (
     <main className="shell" id="top">
       <header className="masthead">
-        <a className="identity" href="#top">
+        <a className="identity" href="/">
           <img src="/art/fisk-colorstack.jpg" width="52" height="52" alt="" />
           <span><strong>ColorStack</strong><small>Fisk University</small></span>
         </a>
-        <a className="nav-link" href="#missions">Case files <span aria-hidden="true">↗</span></a>
+        <a className="nav-link" href="/#missions">Case files <span aria-hidden="true">↗</span></a>
       </header>
 
+      {path !== '/' ? (
+        <section className="case-files" aria-labelledby="case-title">
+          <a className="nav-link inline-block" href="/#missions">← All case files</a>
+          {mission ? (
+            <>
+              <p className="eyebrow mt-5">{mission.chapter} · Stage {String(mission.id).padStart(2, '0')} · {mission.focus}</p>
+              <div className="case-heading mt-2"><h1 id="case-title">{mission.title}</h1></div>
+              <p className="max-w-prose leading-relaxed text-muted">{evidenceNotes[mission.id] ?? mission.briefing}</p>
+              {mission.id === 2 ? (
+                <MissingCommit solved={missingCommitSolved} onSolve={recordMissingCommitSolve} progressNotice={progressNotice} />
+              ) : (
+                <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
+              )}
+              {mission.id < 10 && <a className="nav-link mt-6 inline-block" href={`/missions/${String(mission.id + 1).padStart(2, '0')}`}>Next case file →</a>}
+            </>
+          ) : (
+            <h1 id="case-title" className="mt-4 text-3xl font-bold">Case file not found</h1>
+          )}
+        </section>
+      ) : (
+      <>
       <section className="hero" aria-labelledby="title">
         <img className="hero-photo" src="/art/jubilee-hall.jpg" alt="" fetchPriority="high" />
         <div className="hero-content">
@@ -87,13 +110,13 @@ function App() {
               <ol className="mission-list">
                 {displayed.filter((mission) => mission.chapter === name).map((mission) => (
                   <li key={mission.id}>
-                    <button type="button" className="mission" onClick={() => setSelected(mission)}>
+                    <a className="mission" href={`/missions/${String(mission.id).padStart(2, '0')}`}>
                       <span className="stage-number"><span className="sr-only">Stage </span>{String(mission.id).padStart(2, '0')}</span>
                       <span><strong>{mission.title}</strong><small>{mission.focus}</small></span>
                       <span className="mission-action">
                         {mission.id === 2 ? (missingCommitSolved ? 'Solved' : 'Play') : 'Briefing'} <span aria-hidden="true">↗</span>
                       </span>
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ol>
@@ -101,6 +124,8 @@ function App() {
           )
         })}
       </section>
+      </>
+      )}
 
       <footer className="site-footer">
         <p>ColorStack at Fisk University · A fictional campus mystery</p>
@@ -110,16 +135,6 @@ function App() {
           <p>Chapter photos from Unsplash. <a href="https://unsplash.com/photos/QUHuwyNgSA0">Discovery</a> · <a href="https://unsplash.com/photos/RUyWmB5e-00">Investigation</a> · <a href="https://unsplash.com/photos/FjtWczJWRlc">Recovery</a></p>
         </details>
       </footer>
-
-      <dialog ref={dialog} className="briefing" aria-labelledby="briefing-title" onClose={() => setSelected(undefined)}>
-        <p className="font-mono text-sm text-gold">{selected?.chapter} · Stage {selected?.id}</p>
-        <h2 id="briefing-title" className="mt-2 text-2xl font-bold">{selected?.title}</h2>
-        <p className="mt-4 leading-relaxed text-muted">{selected && (evidenceNotes[selected.id] ?? selected.briefing)}</p>
-        {selected?.id === 2 && <MissingCommit solved={missingCommitSolved} onSolve={recordMissingCommitSolve} progressNotice={progressNotice} />}
-        <form method="dialog" className="mt-6">
-          <button className="filter" autoFocus>Close briefing</button>
-        </form>
-      </dialog>
     </main>
   )
 }

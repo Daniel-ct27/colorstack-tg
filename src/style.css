@@ -36,7 +36,7 @@ body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM
 .primary-link:hover { background: #ffe378; }
 .case-files { padding: clamp(2.5rem, 6vw, 5rem) 0 2rem; scroll-margin-top: 1rem; }
 .case-heading { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 1.2rem 3rem; margin-bottom: 1.5rem; }
-.case-heading h2 { font: 800 clamp(3rem, 7vw, 5.2rem)/.95 var(--display); text-transform: uppercase; }
+.case-heading h1, .case-heading h2 { font: 800 clamp(3rem, 7vw, 5.2rem)/.95 var(--display); text-transform: uppercase; }
 .case-heading > p { max-width: 47ch; color: var(--color-muted); line-height: 1.55; }
 .chapter-filters { display: flex; flex-wrap: wrap; gap: .5rem; }
 .filter { min-height: 2.65rem; padding: .5rem .9rem; border: 1px solid var(--color-line); border-radius: .2rem; cursor: pointer; }
@@ -68,8 +68,6 @@ body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM
 .site-footer summary { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
 .mission:focus-visible { outline-offset: -3px; }
-.briefing { position: fixed; inset: 0; margin: auto; width: min(36rem, calc(100% - 2rem)); max-height: calc(100% - 2rem); overflow: auto; padding: clamp(1rem, 4vw, 1.75rem); border: 1px solid var(--color-line); border-top: 3px solid var(--color-gold); border-radius: .25rem; background: var(--color-panel); color: var(--color-ink); }
-.briefing::backdrop { background: rgb(2 9 22 / .8); }
 @media (max-width: 760px) {
   .chapter { grid-template-columns: 1fr; }
   .chapter-scene { min-height: 15rem; }

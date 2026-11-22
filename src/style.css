@@ -156,3 +156,22 @@ body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM
 .scene-note h2 { font-size: clamp(1.35rem, 4vw, 2rem); line-height: 1.12; }
 .scene-note h3 { margin-top: 1.2rem; font-size: 1.05rem; color: #ffe19b; }
 .scene-note p { margin-top: .45rem; color: var(--color-muted); line-height: 1.62; }
+
+.nav-link, .eyebrow { font-family: "IBM Plex Sans", system-ui, sans-serif; text-transform: none; letter-spacing: normal; }
+.nav-link { color: #efedff; font-size: .98rem; font-weight: 650; }
+.nav-link:hover { color: #ffe19b; text-decoration: underline; text-underline-offset: .22em; }
+.eyebrow { color: #ffe19b; font-size: .94rem; font-weight: 600; }
+.identity img { width: clamp(4.4rem, 11vw, 6.4rem); height: auto; }
+.masthead { padding-block: .75rem; }
+body { background: radial-gradient(ellipse at top right, #232346, transparent 42rem), #0b1528; }
+.hero-photo, .chapter-scene img { transform: scale(1.05); }
+.hero-photo { filter: saturate(.85) brightness(.9); }
+.chapter-scene::after { background: linear-gradient(0deg, #101b32 8%, #101b32d9 38%, #141a3722 90%); }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-photo, .chapter-scene img { animation: scene-drift 23s ease-in-out infinite alternate; }
+  .chapter:nth-of-type(even) .chapter-scene img { animation-direction: alternate-reverse; }
+}
+@keyframes scene-drift {
+  from { transform: scale(1.05) translate3d(0, 0, 0); }
+  to { transform: scale(1.13) translate3d(-1%, 1%, 0); }
+}

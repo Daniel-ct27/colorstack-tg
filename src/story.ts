@@ -21,7 +21,7 @@ export const chapterScenes = {
 export const evidenceNotes: Readonly<Record<number, string>> = {
   1: 'The last student on shift left a directory listing with the handoff notes. Find the project that generated the showcase report.',
   2: 'The last report still runs, but half the team’s work has vanished from it. Compare the history to determine which change altered what the report includes.',
-  3: 'The scheduled export stopped writing files without raising an alarm. Read the test output and find where the export went quiet.',
+  3: 'The scheduled export stopped writing files without raising an alarm. Compare two run logs, fix the exporter config, and verify the repair.',
   4: 'The report and the showcase dashboard expect different formats. Compare the sample responses to reconstruct the format they can both use.',
   5: 'The job records are full of routine activity. Narrow them down to the entries that establish when the report went incomplete.',
   6: 'Two services began a normal exchange, then stopped agreeing about the next step. Read their recorded messages to locate the handoff that stalled.',
@@ -35,7 +35,7 @@ export const missionScenes: Readonly<Partial<Record<number, { title: string; ope
   3: {
     title: 'The empty export folder',
     opening: 'Wednesday, 9:42 p.m. You’ve restored the missing jobs to the report, but the rehearsal dashboard still shows yesterday’s entries. A teammate sends a photo of the empty export folder from just before they left for break. The scheduler marked the run successful anyway.',
-    handoff: 'Find the last step that produced usable output. The team needs to know where the nightly export stopped before anyone tries to replay it.',
+    handoff: 'Compare what the query produced with what the exporter looked for. Repair the scheduled run before the dashboard team retries the refresh.',
   },
   4: {
     title: 'A green light on stale data',

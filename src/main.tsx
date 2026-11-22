@@ -20,6 +20,8 @@ import { ArenaCast } from './ArenaCast.tsx'
 import { crewCases, crewNames } from './crew-story.ts'
 import { FieldNotes } from './FieldNotes.tsx'
 import { Epilogue } from './Epilogue.tsx'
+import { DemoLevel } from './DemoLevel.tsx'
+import { MissionGuide } from './MissionGuide.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -32,6 +34,7 @@ const chapterContacts: Partial<Record<Chapter, { name: string; note: string }>> 
 const base = import.meta.env.BASE_URL
 const courseMapUrl = base + '#missions'
 const epilogueUrl = base + 'epilogue/'
+const demoUrl = base + 'demo/'
 const assetUrl = (name: string) => base + 'art/' + name
 
 function missionUrl(id: number) {
@@ -40,12 +43,13 @@ function missionUrl(id: number) {
 
 const pathname = window.location.pathname
 const path = pathname.startsWith(base) ? '/' + pathname.slice(base.length) : pathname
+const demo = path === '/demo/' || path === '/demo'
 const epilogue = path === '/epilogue/' || path === '/epilogue'
 const match = /^\/missions\/(\d{2})\/?$/.exec(path)
 const mission = match && missionsForChapter('All').find(({ id }) => id === Number(match[1]))
 
 if (path !== '/') {
-  document.title = epilogue ? 'The Final Surprise | ColorStack Code Hunt' : mission ? `${mission.title} | ColorStack Code Hunt` : 'Case file not found | ColorStack Code Hunt'
+  document.title = demo ? "Practice room | ColorStack Code Hunt" : epilogue ? 'The Final Surprise | ColorStack Code Hunt' : mission ? `${mission.title} | ColorStack Code Hunt` : 'Case file not found | ColorStack Code Hunt'
 }
 
 function App() {
@@ -148,7 +152,7 @@ function App() {
           <span className="hud-count">{completedCount}/{allMissions.length} cleared</span>
         </nav>
       )}
-      {epilogue ? <Epilogue cleared={completedCount} mapUrl={courseMapUrl} artUrl={assetUrl} /> : path !== '/' ? (
+      {demo ? <DemoLevel mapUrl={courseMapUrl} firstMission={missionUrl(1)} /> : epilogue ? <Epilogue cleared={completedCount} mapUrl={courseMapUrl} artUrl={assetUrl} /> : path !== '/' ? (
         <section className="case-files" aria-labelledby="case-title">
           {!mission && <a className="nav-link inline-block" href={courseMapUrl}>← Course map</a>}
           {mission ? (
@@ -173,6 +177,7 @@ function App() {
                     <div className="arena-content" onSubmitCapture={() => setCrewAction((count) => count + 1)} onClickCapture={(event) => {
                       if (event.target instanceof Element && event.target.closest('[data-crew-action]')) setCrewAction((count) => count + 1)
                     }}>
+                  <MissionGuide stage={mission.id} />
                   <FieldNotes stage={mission.id} />
                   {mission.id === 1 ? (
                     <HiddenSystem solved={completed.includes(1) || previewSolved === 1} onSolve={() => recordSolve(1)} />
@@ -228,7 +233,14 @@ function App() {
           <h1 id="title">CODE <em>HUNT</em></h1>
           <p className="case-name">Operation Lost Access</p>
           <p className="hero-story">On the night before Thanksgiving, the student team’s showcase system goes dark. The last report is missing jobs, the services disagree, and the team has left campus. Reconstruct what happened before the post-break demo.</p>
-          <a href="#missions" className="primary-link">View course map <span aria-hidden="true">↓</span></a>
+          <div className="hero-quickstart">
+            <p><strong>How to play</strong> · Open a case, inspect the clues, try a move, and use the feedback to solve it. Each clear opens the next case.</p>
+            <div className="hero-actions">
+              <a href={current && completedCount ? missionUrl(current.id) : demoUrl} className="primary-link">{current && completedCount ? 'Continue your case' : 'Try the demo'} <span aria-hidden="true">→</span></a>
+              {completedCount === 0 && <a href={missionUrl(1)} className="hero-secondary">Start Stage 01</a>}
+              <a href="#missions" className="hero-secondary">View course map ↓</a>
+            </div>
+          </div>
         </div>
       </section>
 

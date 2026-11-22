@@ -55,6 +55,14 @@ npm run build  # Type-check and produce the site in dist/
 
 To smoke-test a change, clear a stage in Campaign mode, follow the next checkpoint, and reload to confirm progress is retained. Check both a correct attempt and a plausible wrong one in any challenge you change.
 
+## Deploy to GitHub Pages
+
+In the GitHub repository, open **Settings → Pages** and choose **GitHub Actions** as the build and deployment source. Then open **Actions → Deploy to GitHub Pages → Run workflow** and select **main**.
+
+The workflow tests and builds the game, publishes the result, and runs again on future pushes to `main`. The published site uses [daniel-ct27.github.io/colorstack-tg](https://daniel-ct27.github.io/colorstack-tg/).
+
+To make the same static build locally, run `npm run build:pages`. It writes the home page and all ten mission entry pages under `dist/`.
+
 ## Credits
 
 Built for ColorStack at Fisk University. The [Jubilee Hall photograph](https://commons.wikimedia.org/wiki/File:JubileeHallFiskU.jpg) is by Fhaywood25 under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), with cropping and tinting in the interface. The game’s footer links to the chapter photography.

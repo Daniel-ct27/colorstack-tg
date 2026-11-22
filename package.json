@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:pages": "npm run build -- --base=/colorstack-tg/ && node --experimental-strip-types scripts/write-pages-routes.mjs",
     "test": "node --disable-warning=ExperimentalWarning --test"
   },
   "dependencies": {

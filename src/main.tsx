@@ -28,11 +28,16 @@ const chapterContacts: Partial<Record<Chapter, { name: string; note: string }>> 
   Recovery: { name: 'Miles · Rehearsal crew', note: 'The room is ready. I’ll hold the public dashboard until your rehearsal clears.' },
 }
 
+const base = import.meta.env.BASE_URL
+const courseMapUrl = base + '#missions'
+const assetUrl = (name: string) => base + 'art/' + name
+
 function missionUrl(id: number) {
-  return `/missions/${String(id).padStart(2, '0')}`
+  return `${base}missions/${String(id).padStart(2, '0')}/`
 }
 
-const path = window.location.pathname
+const pathname = window.location.pathname
+const path = pathname.startsWith(base) ? '/' + pathname.slice(base.length) : pathname
 const match = /^\/missions\/(\d{2})\/?$/.exec(path)
 const mission = match && missionsForChapter('All').find(({ id }) => id === Number(match[1]))
 
@@ -103,11 +108,11 @@ function App() {
   return (
     <main className="shell" id="top">
       <header className="masthead">
-        <a className="identity" href="/">
-          <img src="/art/fisk-colorstack.jpg" width="128" height="128" alt="" />
+        <a className="identity" href={base}>
+          <img src={assetUrl('fisk-colorstack.jpg')} width="128" height="128" alt="" />
           <span><strong>ColorStack</strong><small>Fisk University</small></span>
         </a>
-        <a className="nav-link masthead-cases" href="/#missions">Case files <span aria-hidden="true">↗</span></a>
+        <a className="nav-link masthead-cases" href={courseMapUrl}>Case files <span aria-hidden="true">↗</span></a>
       </header>
       {import.meta.env.DEV && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded border border-line bg-panel px-4 py-2">
@@ -118,7 +123,7 @@ function App() {
 
       {mission && (
         <nav className="campaign-hud" aria-label="Campaign checkpoints">
-          <a className="hud-back" href="/#missions">← Course map</a>
+          <a className="hud-back" href={courseMapUrl}>← Course map</a>
           <ol>
             {allMissions.map(({ id, title }) => {
               const status = stageStatus(id, completed)
@@ -142,7 +147,7 @@ function App() {
       )}
       {path !== '/' ? (
         <section className="case-files" aria-labelledby="case-title">
-          {!mission && <a className="nav-link inline-block" href="/#missions">← Course map</a>}
+          {!mission && <a className="nav-link inline-block" href={courseMapUrl}>← Course map</a>}
           {mission ? (
             <>
               <div className="arena-banner" data-chapter={mission.chapter}>
@@ -199,7 +204,7 @@ function App() {
                     {mission.id < allMissions.length ? (
                       <a className="primary-link" href={missionUrl(mission.id + 1)}>Open next case →</a>
                     ) : (
-                      <a className="primary-link" href="/#missions">Return to the completed case files →</a>
+                      <a className="primary-link" href={courseMapUrl}>Return to the completed case files →</a>
                     )}
                   </div>
                   )}
@@ -214,7 +219,7 @@ function App() {
       ) : (
       <>
       <section className="hero" aria-labelledby="title">
-        <img className="hero-photo" src="/art/jubilee-hall.jpg" alt="" fetchPriority="high" />
+        <img className="hero-photo" src={assetUrl('jubilee-hall.jpg')} alt="" fetchPriority="high" />
         <div className="hero-content">
           <p className="eyebrow"><span className="signal" /> Thanksgiving Break · A Fisk ColorStack mystery</p>
           <h1 id="title">CODE <em>HUNT</em></h1>
@@ -261,7 +266,7 @@ function App() {
           return (
             <section className="chapter" key={name} aria-labelledby={scene.image}>
               <div className="chapter-scene">
-                <img src={`/art/${scene.image}.jpg`} alt="" loading="lazy" />
+                <img src={assetUrl(scene.image + '.jpg')} alt="" loading="lazy" />
                 <div className="chapter-intro">
                   <p className="eyebrow">Chapter {scene.number}</p>
                   <h3 id={scene.image}>{name}</h3>
@@ -328,7 +333,7 @@ function App() {
             }}>View new clue</button>}
             {!progressNotice && (mission.id < allMissions.length
               ? <a className="lab-primary" href={missionUrl(mission.id + 1)}>Continue to Stage {String(mission.id + 1).padStart(2, '0')} →</a>
-              : <a className="lab-primary" href="/#missions">Return to course map →</a>)}
+              : <a className="lab-primary" href={courseMapUrl}>Return to course map →</a>)}
           </div>
         </GamePopup>
       )}

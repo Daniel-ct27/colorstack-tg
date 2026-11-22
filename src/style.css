@@ -269,3 +269,10 @@ body { background: #131d31; }
   .masthead .identity { gap: .4rem; }
   .masthead .masthead-cases { padding-inline: .45rem; }
 }
+
+.gateway-match fieldset { min-width: 0; padding: .8rem; border: 1px solid var(--color-line); border-radius: .75rem; background: #223552; }
+.gateway-match legend { padding-inline: .35rem; color: var(--color-gold); font-family: var(--heading); font-weight: 800; }
+.gateway-pair { display: grid; grid-template-columns: minmax(4rem, .8fr) auto minmax(0, 1.3fr); gap: .4rem; align-items: center; padding-block: .25rem; }
+.gateway-pair code { color: #e4edff; font-size: .82rem; }
+.gateway-pair span { color: var(--color-gold); }
+.gateway-pair select { min-width: 0; width: 100%; padding: .55rem .4rem; border: 1px solid #587098; border-radius: .4rem; color: var(--color-ink); background: #111e33; font-size: .88rem; }

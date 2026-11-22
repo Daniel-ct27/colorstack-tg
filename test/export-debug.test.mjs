@@ -11,4 +11,5 @@ test('the repair works for both run modes and preserves the previous report on e
   assert.deepEqual(checkExport('{"inputKey":"records","skipEmpty":false}').checks.map(({ passed }) => passed), [true, true, false])
   assert.ok(checkExport('{bad JSON').error)
   assert.ok(checkExport('{"inputKey":3,"skipEmpty":true}').error)
+  assert.deepEqual(checkExport('{"inputKey":"constructor","skipEmpty":true}').checks.map(({ passed }) => passed), [false, false, true])
 })

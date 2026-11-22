@@ -8,7 +8,7 @@ interface ExportConfig {
 type QueryOutput = Record<string, number[]>
 
 function exportRows(config: ExportConfig, output: QueryOutput) {
-  const records = output[config.inputKey] ?? []
+  const records = Object.hasOwn(output, config.inputKey) ? output[config.inputKey] : []
   return records.length || !config.skipEmpty ? records : null
 }
 

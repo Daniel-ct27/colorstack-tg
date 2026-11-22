@@ -554,3 +554,21 @@ a.course-stop:hover { background: #32598b65; }
   .cast-station .cast-sprite { width: min(3.5rem, 100%); }
   .cast-station .cast-dialogue { font-size: .74rem; }
 }
+
+/* Readable dialogue for compact laptop viewports. */
+.cast-station .cast-member { width: min(100%, 11rem); }
+.cast-station .cast-name { font-size: clamp(.88rem, 1.25vw, 1.05rem); }
+.cast-station .cast-role { font-size: .82rem; line-height: 1.25; text-align: center; }
+.cast-station .cast-dialogue { padding: .6rem .7rem; font-size: clamp(.93rem, 1.08vw, 1.02rem); line-height: 1.45; }
+.cast-station[data-station="giblet"] .cast-dialogue, .cast-station[data-station="bulldog"] .cast-dialogue { width: fit-content; min-width: 4rem; text-align: center; }
+@media (min-width: 1220px) {
+  .arena-floor.cast-around {
+    grid-template-columns: minmax(10.25rem, 13%) minmax(0, 1fr) minmax(10.25rem, 13%);
+  }
+}
+@media (min-width: 761px) and (max-width: 1350px) {
+  .cast-station .cast-dialogue { font-size: 1rem; }
+}
+@media (max-width: 620px) {
+  .cast-station .cast-dialogue { font-size: .88rem; }
+}

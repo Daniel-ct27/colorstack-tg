@@ -1,11 +1,17 @@
 import { useState, type ReactNode } from 'react'
 import { crewCases, crewNames, type CrewId } from './crew-story.ts'
 
-const roles: Record<CrewId, string> = {
-  nia: 'Dispatch',
-  miles: 'Results desk',
-  giblet: 'Hype crew',
-  bulldog: 'Sideline mascot',
+const tasks: Readonly<Partial<Record<number, { nia: string; miles: string }>>> = {
+  1: { nia: 'Overnight handoff', miles: 'Path check' },
+  2: { nia: 'Rehearsal report', miles: 'Git repair' },
+  3: { nia: 'Run logs', miles: 'Export checks' },
+  4: { nia: 'Dispatch captures', miles: 'Queue verification' },
+  5: { nia: 'Original screenshot', miles: 'Timeline check' },
+  6: { nia: 'Recorded exchange', miles: 'Delivery replay' },
+  7: { nia: 'Archive evidence', miles: 'Decode notes' },
+  8: { nia: 'Restart instruction', miles: 'Worker schedule' },
+  9: { nia: 'Frozen records', miles: 'Ticket routing' },
+  10: { nia: 'Staging comparison', miles: 'Release rehearsal' },
 }
 
 const chirps = {
@@ -47,20 +53,21 @@ export function ArenaCast({ stage, actionCount, children }: { stage: number; act
     const tap = reactions[id]
     const responding = Boolean(actionCount && scene?.action.speaker === id && tap?.atAction !== actionCount)
     const mascot = id === 'giblet' || id === 'bulldog'
-    const line = responding ? scene?.action.text : tap || !mascot ? scene?.lines[id] : undefined
+    const task = id === 'nia' || id === 'miles' ? tasks[stage]?.[id] : undefined
+    const line = responding ? scene?.action.text : task ? scene?.lines[id] : undefined
     const noise = tap && mascot && !responding ? (id === 'giblet' ? 'Gobble!' : 'Woof!') : ''
 
     return (
-      <aside className="cast-station" data-station={id} aria-label={`${crewNames[id]} · ${roles[id]}`}>
+      <aside className="cast-station" data-station={id} aria-label={crewNames[id]}>
         <button className="cast-member" type="button" data-sprite={id} onClick={() => {
           setReactions((previous) => ({ ...previous, [id]: { count: (previous[id]?.count ?? 0) + 1, atAction: actionCount } }))
           if (mascot) void playMascotSound(id).catch(() => {})
         }}>
           <span className="cast-sprite" key={responding ? `action:${actionCount}` : tap?.count ?? 0} data-reacting={responding || Boolean(tap)} aria-hidden="true" />
           <span className="cast-name">{crewNames[id]}</span>
-          <span className="cast-role">{roles[id]}</span>
+          {task && <span className="cast-role">{task}</span>}
         </button>
-        <p className="cast-dialogue" role="status" hidden={!line}>
+        <p className="cast-dialogue" role="status" hidden={!line && !noise}>
           {noise && <strong className="cast-noise">{noise} </strong>}{line}
         </p>
       </aside>

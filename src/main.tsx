@@ -10,6 +10,7 @@ import { TrailMascot } from './TrailMascot.tsx'
 import { EvidenceBoard } from './EvidenceBoard.tsx'
 import { ExportTimeline } from './ExportTimeline.tsx'
 import { RecoveryJobs } from './RecoveryJobs.tsx'
+import { GatewayLab } from './GatewayLab.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -35,9 +36,11 @@ function App() {
 
   function togglePlaytest() {
     setPlaytest(!playtest)
+    setPreviewSolved(null)
     try { sessionStorage.setItem('colorstack:playtest', playtest ? 'off' : 'on') }
     catch { /* The setting still works on this page. */ }
   }
+  const [previewSolved, setPreviewSolved] = useState<number | null>(null)
   const [chapter, setChapter] = useState<Chapter | 'All'>('All')
   const [completed, setCompleted] = useState<number[]>(() => {
     try {
@@ -64,7 +67,9 @@ function App() {
   const completedCount = allMissions.filter(({ id }) => stageStatus(id, completed) === 'complete').length
 
   function recordSolve(id: number) {
-    if (stageStatus(id, completed) !== 'current') return
+    const status = stageStatus(id, completed)
+    if (status === 'locked' && playtest) setPreviewSolved(id)
+    if (status !== 'current') return
     const updated = [...completed, id]
     setCompleted(updated)
     setJustSolved(id)
@@ -118,16 +123,19 @@ function App() {
                     </article>
                   )}
                   {mission.id === 1 ? (
-                    <HiddenSystem solved={completed.includes(1)} onSolve={() => recordSolve(1)} />
+                    <HiddenSystem solved={completed.includes(1) || previewSolved === 1} onSolve={() => recordSolve(1)} />
                   ) : mission.id === 2 ? (
-                    <MissingCommit solved={completed.includes(2)} onSolve={() => recordSolve(2)} progressNotice="" />
+                    <MissingCommit solved={completed.includes(2) || previewSolved === 2} onSolve={() => recordSolve(2)} progressNotice="" />
                   ) : mission.id === 3 ? (
-                    <ExportTimeline solved={completed.includes(3)} onSolve={() => recordSolve(3)} />
+                    <ExportTimeline solved={completed.includes(3) || previewSolved === 3} onSolve={() => recordSolve(3)} />
+                  ) : mission.id === 4 ? (
+                    <GatewayLab solved={completed.includes(4) || previewSolved === 4} onSolve={() => recordSolve(4)} />
                   ) : mission.id === 8 ? (
-                    <RecoveryJobs solved={completed.includes(8)} onSolve={() => recordSolve(8)} />
+                    <RecoveryJobs solved={completed.includes(8) || previewSolved === 8} onSolve={() => recordSolve(8)} />
                   ) : (
                     <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
                   )}
+                  {previewSolved === mission.id && <p className="mt-4 text-sm text-gold">Playtest solve verified. Campaign progress is unchanged.</p>}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
                   {mission.id < allMissions.length && stageStatus(mission.id, completed) === 'complete' && (justSolved !== mission.id || revealedSolve === mission.id) && !progressNotice && (
                     <div className="case-unlock" data-new={justSolved === mission.id}>

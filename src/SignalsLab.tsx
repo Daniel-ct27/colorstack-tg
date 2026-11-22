@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { checkWindow, trail } from './signals.ts'
+import { checkHandoff, checkWindow, trail } from './signals.ts'
 
 const sources = ['All services', 'Dashboard', 'Gateway', 'Scheduler']
 
@@ -27,12 +27,9 @@ export function SignalsLab({ solved, onSolve }: { solved: boolean; onSolve: () =
   }
 
   function linkHandoff() {
-    if (linked !== 'e09') {
-      setHandoff('Look for a preparation record from the same showcase run within the confirmed window.')
-      return
-    }
-    setHandoff('Handoff traced. The gateway prepared 12 jobs, but the next dashboard refresh showed seven. Nia will investigate that exchange.')
-    if (!solved) onSolve()
+    const next = checkHandoff(linked)
+    setHandoff(next.feedback)
+    if (next.solved && !solved) onSolve()
   }
 
   return (
@@ -53,7 +50,7 @@ export function SignalsLab({ solved, onSolve }: { solved: boolean; onSolve: () =
           {result?.solved && !tracing && <button type="button" className="filter mt-3" onClick={() => { setTracing(true); setQuery(''); setSource('All services') }}>Follow the handoff →</button>}
           {tracing && (
             <div className="mt-3">
-              <p className="text-sm text-muted">Inside the window, link the record showing what the gateway prepared before the incomplete refresh.</p>
+              <p className="text-sm text-muted">Several gateway records show 12 jobs. Compare the route and destination with the incomplete refresh, then link the matching shipment.</p>
               <button type="button" className="lab-primary mt-2" data-crew-action disabled={!linked} onClick={linkHandoff}>Send the link to Nia</button>
               <p className="lab-result" role="status">{handoff}</p>
               <button type="button" className="filter mt-2" onClick={() => { setTracing(false); setLinked(undefined); setHandoff('') }}>Back to full timeline</button>

@@ -7,9 +7,11 @@ export const trail = [
   { id: 'e06', time: '21:38', source: 'Gateway', run: 'J-57', result: 'Preview response accepted' },
   { id: 'e07', time: '21:39', source: 'Dashboard', run: 'J-61', result: 'Showcase refreshed · 12 jobs · complete' },
   { id: 'e08', time: '21:40', source: 'Scheduler', run: 'J-61', result: 'Queued destination refresh' },
-  { id: 'e09', time: '21:41', source: 'Gateway', run: 'J-61', result: 'Response prepared · 12 jobs' },
+  { id: 'e09', time: '21:41', source: 'Gateway', run: 'J-61', result: 'Prepared 12 jobs · route R-61 · destination dashboard' },
+  { id: 'e15', time: '21:41', source: 'Gateway', run: 'J-61', result: 'Prepared 12 jobs · route R-63 · destination preview cache' },
+  { id: 'e16', time: '21:42', source: 'Gateway', run: 'J-57', result: 'Prepared 12 jobs · route R-59 · destination dashboard' },
   { id: 'e10', time: '21:42', source: 'Scheduler', run: 'J-57', result: 'Preview closed' },
-  { id: 'e11', time: '21:43', source: 'Dashboard', run: 'J-61', result: 'Showcase refreshed · 7 jobs · incomplete' },
+  { id: 'e11', time: '21:43', source: 'Dashboard', run: 'J-61', result: 'Showcase refreshed · 7 jobs · incomplete · route R-61' },
   { id: 'e12', time: '21:44', source: 'Gateway', run: 'J-61', result: 'Retry prepared · 12 jobs' },
   { id: 'e13', time: '21:45', source: 'Dashboard', run: 'J-61', result: 'Showcase retry · 7 jobs · incomplete' },
   { id: 'e14', time: '21:46', source: 'Dashboard', run: 'J-66', result: 'Staff test refreshed · 5 jobs · complete' },
@@ -28,4 +30,12 @@ export function checkWindow(pins: readonly string[]) {
     return { solved: false, feedback: 'A heartbeat or a prepared response cannot prove what viewers saw. Look for dashboard records.' }
   }
   return { solved: false, feedback: 'Those are showcase records. Narrow the window to the last complete view and the first incomplete view.' }
+}
+
+export function checkHandoff(id: string | undefined) {
+  const entry = trail.find((record) => record.id === id)
+  if (!entry || entry.source !== 'Gateway') return { solved: false, feedback: 'Look for the gateway record that prepared the shipment.' }
+  if (entry.run !== 'J-61') return { solved: false, feedback: 'That record came from a different run. Match the run ID from the rehearsal note.' }
+  if (entry.id !== 'e09') return { solved: false, feedback: 'Right run, wrong delivery. Match the route and destination to the incomplete dashboard refresh.' }
+  return { solved: true, feedback: 'Handoff traced. The gateway prepared 12 jobs for this delivery, but the dashboard showed seven. Nia will investigate that exchange.' }
 }

@@ -9,6 +9,7 @@ const hints: Readonly<Partial<Record<number, [string, string]>>> = {
   6: ['A receipt and a commit acknowledgement mean different things.', 'Retry after the commit deadline, and reuse the original delivery ID so the receiver recognizes the work.'],
   7: ['Start with the shape of the outer layer. Are the characters grouped in pairs?', 'Decode the byte pairs, then identify the output by its alphabet. Read the final letters in the other direction.'],
   9: ['Compare the revision numbers before the status words.', 'Preserve the newer withdrawal and hold any equal-revision disagreement for review.'],
+  10: ['Make a safe restore point before you change the staged report.', 'Check the reconciled staging report before you choose the conditional release gate. The same plan must pass both rehearsals.'],
   8: ['Find the two jobs with no prerequisites. They can share the first round.', 'The export and cache must finish before the dashboard can refresh. Both workers must be busy each round.'],
 }
 

@@ -15,6 +15,7 @@ import { SignalsLab } from './SignalsLab.tsx'
 import { RelayLab } from './RelayLab.tsx'
 import { EncodingLab } from './EncodingLab.tsx'
 import { ReconcileLab } from './ReconcileLab.tsx'
+import { FinaleLab } from './FinaleLab.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -142,6 +143,8 @@ function App() {
                     <EncodingLab solved={completed.includes(7) || previewSolved === 7} onSolve={() => recordSolve(7)} />
                   ) : mission.id === 9 ? (
                     <ReconcileLab solved={completed.includes(9) || previewSolved === 9} onSolve={() => recordSolve(9)} />
+                  ) : mission.id === 10 ? (
+                    <FinaleLab solved={completed.includes(10) || previewSolved === 10} onSolve={() => recordSolve(10)} />
                   ) : mission.id === 8 ? (
                     <RecoveryJobs solved={completed.includes(8) || previewSolved === 8} onSolve={() => recordSolve(8)} />
                   ) : (
@@ -149,10 +152,14 @@ function App() {
                   )}
                   {previewSolved === mission.id && <p className="mt-4 text-sm text-gold">Playtest solve verified. Campaign progress is unchanged.</p>}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
-                  {mission.id < allMissions.length && stageStatus(mission.id, completed) === 'complete' && (justSolved !== mission.id || revealedSolve === mission.id) && !progressNotice && (
+                  {stageStatus(mission.id, completed) === 'complete' && (justSolved !== mission.id || revealedSolve === mission.id) && !progressNotice && (
                     <div className="case-unlock" data-new={justSolved === mission.id}>
                     <span className="case-stamp">Case solved</span>
-                    <a className="primary-link" href={missionUrl(mission.id + 1)}>Open next case →</a>
+                    {mission.id < allMissions.length ? (
+                      <a className="primary-link" href={missionUrl(mission.id + 1)}>Open next case →</a>
+                    ) : (
+                      <a className="primary-link" href="/#missions">Return to the completed case files →</a>
+                    )}
                   </div>
                   )}
                 </>

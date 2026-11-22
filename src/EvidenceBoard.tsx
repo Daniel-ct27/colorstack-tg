@@ -9,11 +9,12 @@ const clues = [
   { id: 6, name: 'Delivery policy', detail: 'Wait for the commit acknowledgement. Retry after its deadline using the original delivery ID.' },
   { id: 7, name: 'Restart note', detail: 'Mount snapshot before export.' },
   { id: 9, name: 'Reconciliation policy', detail: 'Preserve newer revisions and withdrawals. Leave identical copies alone and hold equal-revision conflicts.' },
+  { id: 10, name: 'Showcase release runbook', detail: 'Checkpoint, rebuild staging, reconcile, compare, and promote only on agreement. Otherwise restore the checkpoint.' },
   { id: 8, name: 'Recovery job order', detail: 'Round 1: snapshot and manifest. Round 2: export and cache. Round 3: dashboard and archive.' },
 ]
 
 export function EvidenceBoard({ completed }: { completed: readonly number[] }) {
-  const collected = clues.filter(({ id }) => stageStatus(id, completed) === 'complete')
+  const collected = clues.filter(({ id }) => stageStatus(id, completed) === 'complete').sort((first, second) => first.id - second.id)
   return (
     <details id="evidence" className="evidence-board">
       <summary>Evidence board <small>{collected.length} {collected.length === 1 ? 'clue' : 'clues'} collected</small></summary>

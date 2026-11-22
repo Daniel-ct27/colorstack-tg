@@ -10,7 +10,7 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
-:root { --display: "Barlow Condensed", "Arial Narrow", sans-serif; }
+:root { --heading: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; --display: "Barlow Condensed", "Arial Narrow", sans-serif; }
 body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM Plex Sans", system-ui, sans-serif; }
 .shell { max-width: 88rem; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 3.75rem); }
 .masthead { min-height: 5.7rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--color-line); }
@@ -114,3 +114,39 @@ body { background: var(--color-navy); color: var(--color-ink); font-family: "IBM
 .path-resume { display: inline-flex; align-items: center; margin: .85rem 0 0; }
 .stage-lock { margin-top: 1.1rem; max-width: 43rem; padding: 1.1rem; border-left: 3px solid var(--color-gold); background: var(--color-panel); }
 .lab-primary:disabled { cursor: default; opacity: .65; }
+
+/* Mission path */
+.trail-summary { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: center; gap: 1.5rem 3rem; margin: 0 0 1.6rem; padding: clamp(1.15rem, 3.5vw, 2.2rem); border: 1px solid #445b80; border-radius: 1.5rem; background: radial-gradient(ellipse at top right, #263d63, transparent 72%), #112440; }
+.trail-summary h3 { margin-top: .4rem; font: 800 clamp(1.75rem, 4vw, 3rem)/1.08 var(--heading); letter-spacing: -.025em; text-wrap: balance; }
+.trail-detail { margin-top: .4rem; color: var(--color-muted); }
+.trail-progress { padding: 1rem 1.2rem; border: 1px solid #445b80; border-radius: 1rem; background: #0c1a31; }
+.trail-progress p { color: var(--color-muted); }
+.trail-progress strong { margin-right: .25rem; color: var(--color-ink); font: 800 1.8rem/1 var(--heading); font-variant-numeric: tabular-nums; }
+.trail-ticks { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: .32rem; margin-top: .75rem; }
+.trail-ticks span { height: .5rem; border-radius: 1rem; background: #304561; }
+.trail-ticks [data-state="complete"] { background: #a5ecbe; }
+.trail-ticks [data-state="current"] { background: var(--color-gold); }
+.mission-path { padding: .65rem; gap: .25rem; }
+.mission-path::before { inset-inline-start: calc(.65rem + clamp(.75rem, 2.3vw, 1.65rem) + 1.1rem); }
+.mission-path > li + li { border-top: 0; }
+.mission-path .mission { grid-template-columns: 2.2rem minmax(0, 1fr) auto; border: 1px solid transparent; border-radius: .85rem; }
+.mission-path .mission strong { font-family: var(--heading); font-weight: 700; }
+.mission-path .stage-number { width: 2.2rem; height: 2.2rem; }
+.mission-path [data-state="current"] { border-color: #786339; background: #203658; }
+.mission-path [data-state="current"] .stage-number { box-shadow: 0 0 0 4px #ffcc2726; }
+.mission-path [data-state="complete"] .mission-action { color: #a5ecbe; }
+.mission-path .mission-action { font: 700 .78rem/1.15 "IBM Plex Sans", system-ui, sans-serif; }
+.mission-path a:hover { border-color: var(--color-gold); background: #263e62; }
+.chapter { border-radius: 1.35rem; overflow: hidden; }
+.chapter-intro h3 { font-family: var(--heading); font-size: clamp(2rem, 4vw, 3.25rem); text-transform: none; letter-spacing: -.03em; }
+.case-heading h1, .case-heading h2 { font-family: var(--heading); font-size: clamp(2.25rem, 6vw, 4.25rem); line-height: 1.02; text-transform: none; letter-spacing: -.04em; text-wrap: balance; }
+.lab-brief, .lab-console { border-radius: 1rem; }
+.lab-brief h2 { font-family: var(--heading); line-height: 1.06; letter-spacing: -.035em; }
+.hero { border-radius: 0 0 1.4rem 1.4rem; }
+.primary-link, .lab-primary { border-radius: .7rem; box-shadow: 0 3px 0 #98711a; }
+.chapter-filters .filter { border-radius: 2rem; }
+@media (max-width: 760px) { .trail-summary { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: no-preference) {
+  .mission-path a, .primary-link { transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease; }
+  .primary-link:hover { transform: translateY(-2px); }
+}

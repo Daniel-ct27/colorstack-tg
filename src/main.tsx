@@ -115,6 +115,20 @@ function App() {
           </div>
           <p>Follow the evidence through three chapters. Solving your current stage opens the next case file.</p>
         </div>
+        <div className="trail-summary">
+          <div>
+            <p className="eyebrow">{current ? 'Next case' : 'Investigation complete'}</p>
+            <h3>{current?.title ?? 'All case files solved'}</h3>
+            {current && <p className="trail-detail">{current.chapter} · Stage {String(current.id).padStart(2, '0')}</p>}
+            {current && <a className="primary-link" href={missionUrl(current.id)}>{completedCount ? 'Continue investigation' : 'Start investigation'} <span aria-hidden="true">→</span></a>}
+          </div>
+          <div className="trail-progress">
+            <p><strong>{completedCount}/{allMissions.length}</strong> stages solved</p>
+            <div className="trail-ticks" aria-hidden="true">
+              {allMissions.map(({ id }) => <span key={id} data-state={stageStatus(id, completed)} />)}
+            </div>
+          </div>
+        </div>
         <div className="chapter-filters" role="group" aria-label="Filter missions by chapter">
           {(['All', ...chapters] as const).map((option) => (
             <button key={option} type="button" className="filter" aria-pressed={chapter === option} onClick={() => setChapter(option)}>
@@ -122,8 +136,6 @@ function App() {
             </button>
           ))}
         </div>
-        <p className="case-count" role="status">{completedCount} of {allMissions.length} stages solved</p>
-        {current && <a className="nav-link path-resume" href={missionUrl(current.id)}>{completedCount ? 'Continue' : 'Start'} Stage {String(current.id).padStart(2, '0')} →</a>}
         {progressNotice && <p className="mb-4 text-sm text-muted">{progressNotice}</p>}
         {chapters.filter((name) => chapter === 'All' || name === chapter).map((name) => {
           const scene = chapterScenes[name]
@@ -145,7 +157,7 @@ function App() {
                       <span className="stage-number"><span className="sr-only">Stage </span>{String(mission.id).padStart(2, '0')}</span>
                       <span><strong>{mission.title}</strong><small>{mission.focus}</small></span>
                       <span className="mission-action">
-                        {status === 'locked' ? 'Locked' : status === 'complete' ? 'Solved' : 'Current'}
+                        {status === 'locked' ? 'Locked' : status === 'complete' ? 'Solved' : 'Play →'}
                       </span>
                     </>
                   )

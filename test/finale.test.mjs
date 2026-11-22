@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { rehearseRelease } from '../src/finale.ts'
+import { checkReleaseDecision, rehearseRelease } from '../src/finale.ts'
 
 const plan = ['checkpoint', 'rebuild', 'reconcile', 'compare', 'route']
 
@@ -18,4 +18,11 @@ test('unsafe release steps and invalid ordering fail with a trace', () => {
   assert.match(rehearseRelease(['checkpoint', 'rebuild', 'compare'], false).trace.at(-1), /reconciliation/)
   assert.equal(rehearseRelease([...plan.slice(0, -1), 'publish'], true).passed, false)
   assert.equal(rehearseRelease(['checkpoint', 'rebuild', 'overwrite'], false).passed, false)
+})
+
+test('the player must choose a different release decision for each observed outcome', () => {
+  assert.equal(checkReleaseDecision('agreement', 'publish').passed, true)
+  assert.equal(checkReleaseDecision('agreement', 'restore').passed, false)
+  assert.equal(checkReleaseDecision('mismatch', 'publish').passed, false)
+  assert.equal(checkReleaseDecision('mismatch', 'restore').passed, true)
 })

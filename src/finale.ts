@@ -56,3 +56,16 @@ export function rehearseRelease(plan: readonly ReleaseAction[], mismatch: boolea
 
   return outcome ? { passed: true, trace } : stop('The plan ended before the release gate.')
 }
+
+export type ReleaseDecision = 'publish' | 'restore'
+
+export function checkReleaseDecision(verification: 'agreement' | 'mismatch', decision: ReleaseDecision) {
+  if (verification === 'agreement') {
+    return decision === 'publish'
+      ? { passed: true, detail: 'Verified report promoted. The showcase is ready.' }
+      : { passed: false, detail: 'The public report is safe, but the verified showcase update never went live.' }
+  }
+  return decision === 'restore'
+    ? { passed: true, detail: 'Checkpoint restored. The public dashboard is unchanged.' }
+    : { passed: false, detail: 'The proposed report disagrees with the archive. Publishing would put unchecked data on the public dashboard.' }
+}

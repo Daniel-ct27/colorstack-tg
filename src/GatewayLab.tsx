@@ -2,11 +2,11 @@ import { useState, type FormEvent } from 'react'
 import { checkGateway, gatewaySamples } from './gateway.ts'
 
 const fields = {
-  arrayKey: { target: 'Live list', choices: ['records', 'jobs'] },
+  arrayKey: { target: 'Live list', choices: ['jobs', 'records'] },
   idKey: { target: 'Dashboard ID', choices: ['request', 'ticket'] },
-  statusKey: { target: 'Work status', choices: ['receipt', 'phase'] },
+  statusKey: { target: 'Work status', choices: ['phase', 'receipt'] },
   k2: { target: 'K2', choices: ['completed', 'queued'] },
-  q7: { target: 'Q7', choices: ['queued', 'completed'] },
+  q7: { target: 'Q7', choices: ['completed', 'queued'] },
 } as const
 
 const captures = ['First sync', 'After retry', 'After closeout'] as const
@@ -14,7 +14,7 @@ const captures = ['First sync', 'After retry', 'After closeout'] as const
 type Field = keyof typeof fields
 
 const steps: { title: string; direction: string; keys: Field[] }[] = [
-  { title: '1. Match the fields', direction: 'Pick the gateway field that supplies each dashboard target.', keys: ['arrayKey', 'idKey', 'statusKey'] },
+  { title: '1. Match the fields', direction: 'Use the retry and closeout captures to identify which fields the dashboard should trust.', keys: ['arrayKey', 'idKey', 'statusKey'] },
   { title: '2. Translate the job states', direction: 'Pick the dashboard name for each gateway state.', keys: ['k2', 'q7'] },
 ]
 

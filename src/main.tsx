@@ -7,6 +7,7 @@ import { HiddenSystem } from './HiddenSystem.tsx'
 import { stageStatus } from './progress.ts'
 import { CampusBackdrop } from './CampusBackdrop.tsx'
 import { TrailMascot } from './TrailMascot.tsx'
+import { EvidenceBoard } from './EvidenceBoard.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -99,7 +100,10 @@ function App() {
                   )}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
                   {mission.id < allMissions.length && stageStatus(mission.id, completed) === 'complete' && !progressNotice && (
-                    <a className="primary-link" href={missionUrl(mission.id + 1)}>Next stage →</a>
+                    <div className="case-unlock" data-new={justSolved === mission.id}>
+                    <span className="case-stamp">Case solved</span>
+                    <a className="primary-link" href={missionUrl(mission.id + 1)}>Open next case →</a>
+                  </div>
                   )}
                 </>
               )}
@@ -107,6 +111,7 @@ function App() {
           ) : (
             <h1 id="case-title" className="mt-4 text-3xl font-bold">Case file not found</h1>
           )}
+          <EvidenceBoard completed={completed} />
         </section>
       ) : (
       <>
@@ -143,6 +148,7 @@ function App() {
             </div>
           </div>
         </div>
+        <EvidenceBoard completed={completed} />
         <div className="chapter-filters" role="group" aria-label="Filter missions by chapter">
           {(['All', ...chapters] as const).map((option) => (
             <button key={option} type="button" className="filter" aria-pressed={chapter === option} onClick={() => setChapter(option)}>
@@ -193,7 +199,7 @@ function App() {
       </>
       )}
 
-      <TrailMascot solvedStage={justSolved} />
+      <TrailMascot solvedStage={justSolved} activeStage={mission && stageStatus(mission.id, completed) === 'current' ? mission.id : undefined} />
       <footer className="site-footer">
         <p>ColorStack at Fisk University · A fictional campus mystery</p>
         <details>

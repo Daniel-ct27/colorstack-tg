@@ -19,6 +19,7 @@ export function rehearseRelay(policy: RelayPolicy) {
     let confirmed = false
     let premature = false
     const deadline = Number(policy.timeoutTicks)
+    const prematureRetry = drop === 'slow' && policy.retry === 'timeout' && policy.finish === 'commit' && deadline < 3
 
     function send(id: string, attempt: number) {
       trace.push(`PUBLISH ${id}`)
@@ -29,6 +30,10 @@ export function rehearseRelay(policy: RelayPolicy) {
 
       trace.push(`RECEIVED ${id}`)
       if (policy.finish === 'receipt' && !written.has(id)) premature = true
+      if (attempt === 1 && drop === 'slow') {
+        trace.push('The database needs three ticks for this healthy write.')
+        if (prematureRetry) trace.push(`Tick ${deadline}: retry requested while the first write is still running.`)
+      }
       trace.push(written.has(id) ? 'Existing delivery recognized.' : 'Dashboard wrote the report.')
       written.add(id)
 
@@ -41,9 +46,6 @@ export function rehearseRelay(policy: RelayPolicy) {
       if (policy.finish === 'commit') confirmed = true
     }
 
-    if (drop === 'slow') trace.push('The database needs three ticks for this healthy write.')
-    const prematureRetry = drop === 'slow' && policy.retry === 'timeout' && policy.finish === 'commit' && deadline < 3
-    if (prematureRetry) trace.push(`Tick ${deadline}: retry requested while the first write is still running.`)
     send('R-61', 1)
     const retry = (policy.retry === 'timeout' && !confirmed) || (policy.retry === 'receipt' && drop !== 'publish')
     const tooLate = retry && policy.retry === 'timeout' && deadline > 5

@@ -19,6 +19,7 @@ import { GamePopup } from './GamePopup.tsx'
 import { ArenaCast } from './ArenaCast.tsx'
 import { crewCases, crewNames } from './crew-story.ts'
 import { FieldNotes } from './FieldNotes.tsx'
+import { Epilogue } from './Epilogue.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -30,6 +31,7 @@ const chapterContacts: Partial<Record<Chapter, { name: string; note: string }>> 
 
 const base = import.meta.env.BASE_URL
 const courseMapUrl = base + '#missions'
+const epilogueUrl = base + 'epilogue/'
 const assetUrl = (name: string) => base + 'art/' + name
 
 function missionUrl(id: number) {
@@ -38,11 +40,12 @@ function missionUrl(id: number) {
 
 const pathname = window.location.pathname
 const path = pathname.startsWith(base) ? '/' + pathname.slice(base.length) : pathname
+const epilogue = path === '/epilogue/' || path === '/epilogue'
 const match = /^\/missions\/(\d{2})\/?$/.exec(path)
 const mission = match && missionsForChapter('All').find(({ id }) => id === Number(match[1]))
 
 if (path !== '/') {
-  document.title = mission ? `${mission.title} | ColorStack Code Hunt` : 'Case file not found | ColorStack Code Hunt'
+  document.title = epilogue ? 'E-Board message | ColorStack Code Hunt' : mission ? `${mission.title} | ColorStack Code Hunt` : 'Case file not found | ColorStack Code Hunt'
 }
 
 function App() {
@@ -145,7 +148,7 @@ function App() {
           <span className="hud-count">{completedCount}/{allMissions.length} cleared</span>
         </nav>
       )}
-      {path !== '/' ? (
+      {epilogue ? <Epilogue cleared={completedCount} mapUrl={courseMapUrl} artUrl={assetUrl} /> : path !== '/' ? (
         <section className="case-files" aria-labelledby="case-title">
           {!mission && <a className="nav-link inline-block" href={courseMapUrl}>← Course map</a>}
           {mission ? (
@@ -162,7 +165,8 @@ function App() {
                 <div className="stage-lock">
                   <h2 className="font-bold text-gold">Stage locked</h2>
                   <p className="mt-1 text-muted">Complete the earlier missions to open this case file.</p>
-                  {current && <a className="nav-link mt-2 inline-block" href={missionUrl(current.id)}>Go to Stage {String(current.id).padStart(2, '0')} →</a>}
+                  {!current && <a className='primary-link' href={epilogueUrl}>Open the E-Board message →</a>}
+            {current && <a className="nav-link mt-2 inline-block" href={missionUrl(current.id)}>Go to Stage {String(current.id).padStart(2, '0')} →</a>}
                 </div>
               ) : (
                 <>
@@ -204,7 +208,7 @@ function App() {
                     {mission.id < allMissions.length ? (
                       <a className="primary-link" href={missionUrl(mission.id + 1)}>Open next case →</a>
                     ) : (
-                      <a className="primary-link" href={courseMapUrl}>Return to the completed case files →</a>
+                      <a className="primary-link" href={epilogueUrl}>Open the E-Board message →</a>
                     )}
                   </div>
                   )}
@@ -242,6 +246,7 @@ function App() {
             <p className="eyebrow">{current ? 'Next case' : 'Investigation complete'}</p>
             <h3>{current?.title ?? 'All case files solved'}</h3>
             {current && <p className="trail-detail">{current.chapter} · Stage {String(current.id).padStart(2, '0')}</p>}
+            {!current && <a className='primary-link' href={epilogueUrl}>Open the E-Board message →</a>}
             {current && <a className="primary-link" href={missionUrl(current.id)}>{completedCount ? 'Continue investigation' : 'Start investigation'} <span aria-hidden="true">→</span></a>}
           </div>
           <div className="trail-progress">
@@ -252,6 +257,10 @@ function App() {
           </div>
         </div>
         <EvidenceBoard completed={completed} />
+        <div className="epilogue-unlock">
+          <strong>E-Board message · {completedCount}/{allMissions.length} pieces</strong>
+          {completedCount === allMissions.length ? <a className="primary-link" href={epilogueUrl}>Open epilogue →</a> : <span className="text-sm text-muted">Clear each case to collect a piece.</span>}
+        </div>
         <div className="chapter-filters" role="group" aria-label="Filter missions by chapter">
           {(['All', ...chapters] as const).map((option) => (
             <button key={option} type="button" className="filter" aria-pressed={chapter === option} onClick={() => setChapter(option)}>
@@ -333,7 +342,7 @@ function App() {
             }}>View new clue</button>}
             {!progressNotice && (mission.id < allMissions.length
               ? <a className="lab-primary" href={missionUrl(mission.id + 1)}>Continue to Stage {String(mission.id + 1).padStart(2, '0')} →</a>
-              : <a className="lab-primary" href={courseMapUrl}>Return to course map →</a>)}
+              : <a className="lab-primary" href={completedCount === allMissions.length ? epilogueUrl : courseMapUrl}>{completedCount === allMissions.length ? "Open the E-Board message →" : "Return to course map →"}</a>)}
           </div>
         </GamePopup>
       )}

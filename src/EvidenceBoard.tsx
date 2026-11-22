@@ -1,3 +1,4 @@
+import { messageWords } from './Epilogue.tsx'
 import { stageStatus } from './progress.ts'
 
 const clues = [
@@ -21,7 +22,7 @@ export function EvidenceBoard({ completed }: { completed: readonly number[] }) {
       {collected.length ? (
         <ul>
           {collected.map(({ id, name, detail }) => (
-            <li key={id}><small>Stage {String(id).padStart(2, '0')}</small><strong>{name}</strong><p>{detail}</p></li>
+            <li key={id}><small>Stage {String(id).padStart(2, '0')}</small><strong>{name}</strong><p>{detail}</p><span className="message-fragment">Message piece {id}/{messageWords.length} · {messageWords[id - 1]}</span></li>
           ))}
         </ul>
       ) : <p className="mt-3 text-muted">Your first clue appears here when you solve Stage 01.</p>}

@@ -16,6 +16,7 @@ import { RelayLab } from './RelayLab.tsx'
 import { EncodingLab } from './EncodingLab.tsx'
 import { ReconcileLab } from './ReconcileLab.tsx'
 import { FinaleLab } from './FinaleLab.tsx'
+import { GamePopup } from './GamePopup.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -47,6 +48,8 @@ function App() {
   function togglePlaytest() {
     setPlaytest(!playtest)
     setPreviewSolved(null)
+    setRevealedSolve(null)
+    setDismissedClear(null)
     try { sessionStorage.setItem('colorstack:playtest', playtest ? 'off' : 'on') }
     catch { /* The setting still works on this page. */ }
   }
@@ -64,13 +67,16 @@ function App() {
   })
   const [progressNotice, setProgressNotice] = useState('')
   const [justSolved, setJustSolved] = useState<number | null>(null)
+  const [briefingOpen, setBriefingOpen] = useState(false)
+  const [dismissedClear, setDismissedClear] = useState<number | null>(null)
   const [revealedSolve, setRevealedSolve] = useState<number | null>(null)
 
   useEffect(() => {
-    if (justSolved === null) return
-    const timer = window.setTimeout(() => setRevealedSolve(justSolved), 1000)
+    const stage = justSolved ?? previewSolved
+    if (stage === null) return
+    const timer = window.setTimeout(() => setRevealedSolve(stage), 1000)
     return () => window.clearTimeout(timer)
-  }, [justSolved])
+  }, [justSolved, previewSolved])
   const displayed = missionsForChapter(chapter)
   const allMissions = missionsForChapter('All')
   const current = allMissions.find(({ id }) => stageStatus(id, completed) === 'current')
@@ -135,8 +141,14 @@ function App() {
           {!mission && <a className="nav-link inline-block" href="/#missions">← Course map</a>}
           {mission ? (
             <>
-              <p className="eyebrow mt-5">{mission.chapter} · Stage {String(mission.id).padStart(2, '0')} · {mission.focus}</p>
-              <div className="case-heading mt-2"><h1 id="case-title">{mission.title}</h1></div>
+              <div className="arena-banner" data-chapter={mission.chapter}>
+                <span className="arena-number" aria-hidden="true">{String(mission.id).padStart(2, '0')}</span>
+                <div>
+                  <p className="eyebrow">{mission.chapter} · Stage {String(mission.id).padStart(2, '0')} · {mission.focus}</p>
+                  <h1 id="case-title">{mission.title}</h1>
+                </div>
+                <button type="button" className="arena-briefing" onClick={() => setBriefingOpen(true)}>Mission briefing ↗</button>
+              </div>
               {!playtest && stageStatus(mission.id, completed) === 'locked' ? (
                 <div className="stage-lock">
                   <h2 className="font-bold text-gold">Stage locked</h2>
@@ -145,17 +157,7 @@ function App() {
                 </div>
               ) : (
                 <>
-                  {!missionScenes[mission.id] && <p className="max-w-prose leading-relaxed text-muted">{evidenceNotes[mission.id] ?? mission.briefing}</p>}
-                  {missionScenes[mission.id] && (
-                    <article className="scene-note" aria-labelledby="scene-title">
-                      <h2 id="scene-title">{missionScenes[mission.id]?.title}</h2>
-                      <p>{missionScenes[mission.id]?.opening}</p>
-                      <h3>Your assignment</h3>
-                      <p>{evidenceNotes[mission.id] ?? mission.briefing}</p>
-                      <h3>What to carry forward</h3>
-                      <p>{missionScenes[mission.id]?.handoff}</p>
-                    </article>
-                  )}
+                  <div className="arena-floor">
                   {mission.id === 1 ? (
                     <HiddenSystem solved={completed.includes(1) || previewSolved === 1} onSolve={() => recordSolve(1)} />
                   ) : mission.id === 2 ? (
@@ -179,6 +181,7 @@ function App() {
                   ) : (
                     <p className="mt-6 text-sm text-gold">Briefing available. Playable investigation in development.</p>
                   )}
+                  </div>
                   {previewSolved === mission.id && <p className="mt-4 text-sm text-gold">Playtest solve verified. Campaign progress is unchanged.</p>}
                   {progressNotice && <p className="mt-4 text-sm text-gold" role="status">{progressNotice}</p>}
                   {stageStatus(mission.id, completed) === 'complete' && (justSolved !== mission.id || revealedSolve === mission.id) && !progressNotice && (
@@ -287,7 +290,29 @@ function App() {
       </>
       )}
 
-      <TrailMascot solvedStage={revealedSolve} activeStage={mission && (stageStatus(mission.id, completed) === 'current' || (playtest && !completed.includes(mission.id))) ? mission.id : undefined} />
+      {mission && briefingOpen && (
+        <GamePopup kind="briefing" title={mission.title} close={() => setBriefingOpen(false)}>
+          {missionScenes[mission.id] && <p>{missionScenes[mission.id]?.opening}</p>}
+          <h3>Your assignment</h3>
+          <p>{evidenceNotes[mission.id] ?? mission.briefing}</p>
+          {missionScenes[mission.id] && <><h3>What to carry forward</h3><p>{missionScenes[mission.id]?.handoff}</p></>}
+          <div className="game-popup-actions"><button type="button" className="lab-primary" onClick={() => setBriefingOpen(false)}>Back to the mission</button></div>
+        </GamePopup>
+      )}
+      {mission && !briefingOpen && revealedSolve === mission.id && dismissedClear !== mission.id && (
+        <GamePopup kind="clear" title={mission.id === allMissions.length && justSolved === mission.id ? 'Campaign cleared!' : 'Checkpoint cleared!'} close={() => setDismissedClear(mission.id)}>
+          <div className="clear-medal" aria-hidden="true">✓</div>
+          <p>{mission.title}</p>
+          <p>{previewSolved === mission.id ? 'Playtest complete. Campaign progress is unchanged.' : 'New clue pinned to the evidence board.'}</p>
+          <div className="game-popup-actions">
+            <button type="button" className="filter" onClick={() => setDismissedClear(mission.id)}>Keep playing</button>
+            {!progressNotice && (mission.id < allMissions.length
+              ? <a className="lab-primary" href={missionUrl(mission.id + 1)}>Continue to Stage {String(mission.id + 1).padStart(2, '0')} →</a>
+              : <a className="lab-primary" href="/#missions">Return to course map →</a>)}
+          </div>
+        </GamePopup>
+      )}
+      <TrailMascot solvedStage={justSolved === revealedSolve && dismissedClear !== revealedSolve ? revealedSolve : null} activeStage={mission && (stageStatus(mission.id, completed) === 'current' || (playtest && !completed.includes(mission.id))) ? mission.id : undefined} />
       <footer className="site-footer">
         <p>ColorStack at Fisk University · A fictional campus mystery</p>
         <details>

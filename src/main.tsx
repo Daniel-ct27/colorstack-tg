@@ -315,6 +315,16 @@ function App() {
           <p>{previewSolved === mission.id ? 'Playtest complete. Campaign progress is unchanged.' : 'New clue pinned to the evidence board.'}</p>
           <div className="game-popup-actions">
             <button type="button" className="filter" onClick={() => setDismissedClear(mission.id)}>Keep playing</button>
+            {previewSolved !== mission.id && <button type="button" className="filter" onClick={() => {
+              setDismissedClear(mission.id)
+              requestAnimationFrame(() => {
+                const board = document.querySelector<HTMLDetailsElement>('details#evidence')
+                if (!board) return
+                board.open = true
+                board.scrollIntoView({ block: 'start' })
+                board.querySelector('summary')?.focus({ preventScroll: true })
+              })
+            }}>View new clue</button>}
             {!progressNotice && (mission.id < allMissions.length
               ? <a className="lab-primary" href={missionUrl(mission.id + 1)}>Continue to Stage {String(mission.id + 1).padStart(2, '0')} →</a>
               : <a className="lab-primary" href="/#missions">Return to course map →</a>)}

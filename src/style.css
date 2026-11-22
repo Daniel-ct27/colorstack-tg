@@ -572,3 +572,9 @@ a.course-stop:hover { background: #32598b65; }
 @media (max-width: 620px) {
   .cast-station .cast-dialogue { font-size: .88rem; }
 }
+
+.runbook-step { display: flex; flex-wrap: wrap; gap: .6rem .75rem; align-items: center; justify-content: space-between; }
+.runbook-step > span { flex: 1 1 14rem; min-width: 0; }
+.runbook-step-controls { display: flex; flex-wrap: wrap; gap: .35rem; }
+.runbook-step-controls .filter { min-width: 2.6rem; padding-inline: .6rem; font-size: .85rem; }
+.evidence-board { scroll-margin-top: 1rem; }

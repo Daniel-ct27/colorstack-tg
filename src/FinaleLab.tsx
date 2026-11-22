@@ -12,6 +12,16 @@ export function FinaleLab({ solved, onSolve }: { solved: boolean; onSolve: () =>
     setResults(undefined)
   }
 
+  function moveStep(index: number, offset: -1 | 1) {
+    const target = index + offset
+    if (target < 0 || target >= plan.length) return
+    const next = [...plan]
+    const step = next[index]
+    next[index] = next[target]
+    next[target] = step
+    update(next)
+  }
+
   function rehearse() {
     const next = [rehearseRelease(plan, false), rehearseRelease(plan, true)]
     setResults(next)
@@ -32,12 +42,21 @@ export function FinaleLab({ solved, onSolve }: { solved: boolean; onSolve: () =>
       </div>
       <div className="lab-console">
         <div className="lab-console-bar"><h3>Release runbook</h3><span className="lab-label">{plan.length} actions</span></div>
-        <p className="mt-3 text-sm text-muted">Add actions in the order you want them to run. Remove an action to revise the plan.</p>
+        <p className="mt-3 text-sm text-muted">Add actions to the runbook. Use the arrows to move a step earlier or later.</p>
         <div className="lab-controls">
           {actionIds.map((id) => <button className="filter text-left" type="button" key={id} disabled={plan.includes(id)} onClick={() => update([...plan, id])}>{releaseActions[id]}</button>)}
         </div>
         <ol className="mt-4 grid gap-2">
-          {plan.map((id, index) => <li className="flex items-center justify-between gap-2 rounded border border-line bg-navy p-3" key={id}><span><strong className="text-gold">{index + 1}.</strong> {releaseActions[id]}</span><button type="button" className="filter text-sm" aria-label={`Remove ${releaseActions[id]}`} onClick={() => update(plan.filter((action) => action !== id))}>Remove</button></li>)}
+          {plan.map((id, index) => (
+            <li className="runbook-step rounded border border-line bg-navy p-3" key={id}>
+              <span><strong className="text-gold">{index + 1}.</strong> {releaseActions[id]}</span>
+              <div className="runbook-step-controls">
+                <button type="button" className="filter" aria-label={`Move ${releaseActions[id]} earlier`} disabled={index === 0} onClick={() => moveStep(index, -1)}>↑</button>
+                <button type="button" className="filter" aria-label={`Move ${releaseActions[id]} later`} disabled={index === plan.length - 1} onClick={() => moveStep(index, 1)}>↓</button>
+                <button type="button" className="filter" aria-label={`Remove ${releaseActions[id]}`} onClick={() => update(plan.filter((action) => action !== id))}>Remove</button>
+              </div>
+            </li>
+          ))}
         </ol>
         <button className="lab-primary mt-4" type="button" data-crew-action disabled={!plan.length} onClick={rehearse}>Rehearse both outcomes</button>
         <div className="mt-4 grid gap-3" role="status">

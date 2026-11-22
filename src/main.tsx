@@ -45,7 +45,7 @@ const match = /^\/missions\/(\d{2})\/?$/.exec(path)
 const mission = match && missionsForChapter('All').find(({ id }) => id === Number(match[1]))
 
 if (path !== '/') {
-  document.title = epilogue ? 'E-Board message | ColorStack Code Hunt' : mission ? `${mission.title} | ColorStack Code Hunt` : 'Case file not found | ColorStack Code Hunt'
+  document.title = epilogue ? 'The Final Surprise | ColorStack Code Hunt' : mission ? `${mission.title} | ColorStack Code Hunt` : 'Case file not found | ColorStack Code Hunt'
 }
 
 function App() {
@@ -165,7 +165,6 @@ function App() {
                 <div className="stage-lock">
                   <h2 className="font-bold text-gold">Stage locked</h2>
                   <p className="mt-1 text-muted">Complete the earlier missions to open this case file.</p>
-                  {!current && <a className='primary-link' href={epilogueUrl}>Open the E-Board message →</a>}
             {current && <a className="nav-link mt-2 inline-block" href={missionUrl(current.id)}>Go to Stage {String(current.id).padStart(2, '0')} →</a>}
                 </div>
               ) : (
@@ -208,7 +207,7 @@ function App() {
                     {mission.id < allMissions.length ? (
                       <a className="primary-link" href={missionUrl(mission.id + 1)}>Open next case →</a>
                     ) : (
-                      <a className="primary-link" href={epilogueUrl}>Open the E-Board message →</a>
+                      <a className="primary-link" href={epilogueUrl}>Continue to bonus level →</a>
                     )}
                   </div>
                   )}
@@ -246,7 +245,6 @@ function App() {
             <p className="eyebrow">{current ? 'Next case' : 'Investigation complete'}</p>
             <h3>{current?.title ?? 'All case files solved'}</h3>
             {current && <p className="trail-detail">{current.chapter} · Stage {String(current.id).padStart(2, '0')}</p>}
-            {!current && <a className='primary-link' href={epilogueUrl}>Open the E-Board message →</a>}
             {current && <a className="primary-link" href={missionUrl(current.id)}>{completedCount ? 'Continue investigation' : 'Start investigation'} <span aria-hidden="true">→</span></a>}
           </div>
           <div className="trail-progress">
@@ -257,10 +255,6 @@ function App() {
           </div>
         </div>
         <EvidenceBoard completed={completed} />
-        <div className="epilogue-unlock">
-          <strong>E-Board message · {completedCount}/{allMissions.length} pieces</strong>
-          {completedCount === allMissions.length ? <a className="primary-link" href={epilogueUrl}>Open epilogue →</a> : <span className="text-sm text-muted">Clear each case to collect a piece.</span>}
-        </div>
         <div className="chapter-filters" role="group" aria-label="Filter missions by chapter">
           {(['All', ...chapters] as const).map((option) => (
             <button key={option} type="button" className="filter" aria-pressed={chapter === option} onClick={() => setChapter(option)}>
@@ -309,6 +303,19 @@ function App() {
             </section>
           )
         })}
+        <section className="bonus-checkpoint" aria-labelledby="bonus-title">
+          <span className="bonus-token" aria-hidden="true">★</span>
+          <div>
+            <p className="eyebrow">Stage 11 · Bonus level</p>
+            <h3 id="bonus-title">The Final Surprise</h3>
+            <p className="text-sm text-muted">{completedCount}/{allMissions.length} pieces collected</p>
+          </div>
+          {completedCount === allMissions.length ? (
+            <a className="primary-link" href={epilogueUrl}>Play bonus level →</a>
+          ) : (
+            <p className="bonus-locked">Locked · Clear all ten stages</p>
+          )}
+        </section>
       </section>
       </>
       )}
@@ -342,7 +349,7 @@ function App() {
             }}>View new clue</button>}
             {!progressNotice && (mission.id < allMissions.length
               ? <a className="lab-primary" href={missionUrl(mission.id + 1)}>Continue to Stage {String(mission.id + 1).padStart(2, '0')} →</a>
-              : <a className="lab-primary" href={completedCount === allMissions.length ? epilogueUrl : courseMapUrl}>{completedCount === allMissions.length ? "Open the E-Board message →" : "Return to course map →"}</a>)}
+              : <a className="lab-primary" href={completedCount === allMissions.length ? epilogueUrl : courseMapUrl}>{completedCount === allMissions.length ? "Continue to bonus level →" : "Return to course map →"}</a>)}
           </div>
         </GamePopup>
       )}

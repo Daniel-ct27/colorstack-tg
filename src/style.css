@@ -587,8 +587,6 @@ a.course-stop:hover { background: #32598b65; }
 .worker-history { display: grid; gap: .3rem; color: #c3efcf; font-size: .82rem; }
 
 .message-fragment { display: inline-block; margin-top: .55rem; padding: .18rem .45rem; border: 1px dashed #a87832; border-radius: .25rem; color: #4d2e0b; background: #ffe4a3; font-size: .82rem; font-weight: 800; }
-.epilogue-unlock { margin-block: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; padding: .8rem 1rem; border: 1px solid #d5aa57; border-radius: .75rem; background: #203861; }
-.epilogue-unlock .primary-link { margin-top: 0; }
 .epilogue { max-width: 67rem; margin: 2rem auto; }
 .epilogue-letter { margin-top: 1rem; padding: clamp(1.2rem, 5vw, 3rem); border: 3px solid #f2c166; border-radius: 1.2rem .4rem 1.2rem .4rem; color: #1d2942; background: #fff0cf; box-shadow: .45rem .45rem 0 #956535; }
 .epilogue-letter .eyebrow { color: #65400c; }
@@ -600,3 +598,10 @@ a.course-stop:hover { background: #32598b65; }
 .epilogue-photos figure { margin: 0; padding: .45rem; background: #fff4dd; color: #223451; border-radius: .35rem; box-shadow: 0 .35rem 0 #0a1937; }
 .epilogue-photos img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #e6d6b9; }
 .epilogue-photos figcaption { padding: .5rem .2rem .2rem; font-weight: 700; }
+
+.bonus-checkpoint { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: .75rem 1rem; align-items: center; margin-top: 2rem; padding: clamp(.8rem,3vw,1.4rem); border: 2px solid #d5aa57; border-radius: 1.2rem; background: #172951; box-shadow: 0 .35rem 0 #08152d; }
+.bonus-token { display: grid; place-items: center; width: clamp(3rem,8vw,4.4rem); aspect-ratio: 1; border: 2px solid #ffe5a5; border-radius: 50%; background: #ffda72; color: #382746; font-size: clamp(1.45rem,4vw,2.2rem); box-shadow: inset 0 -.3rem 0 #c68a36; }
+.bonus-checkpoint h3 { color: #fff5d7; font: 850 clamp(1.4rem,3.5vw,2.35rem)/1.12 var(--heading); }
+.bonus-checkpoint .primary-link { margin: 0; }
+.bonus-locked { color: #d5e4fb; font-size: .88rem; }
+@media(max-width: 620px) { .bonus-checkpoint { grid-template-columns: auto minmax(0,1fr); } .bonus-checkpoint > :last-child { grid-column: 2; justify-self: start; } }

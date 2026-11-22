@@ -16,7 +16,7 @@ export function Epilogue({ cleared, mapUrl, artUrl }: { cleared: number; mapUrl:
       {unlocked ? (
         <>
           <div className="epilogue-letter">
-            <p className="eyebrow">A note from the ColorStack E-Board</p>
+            <p className="eyebrow">Bonus level cleared</p>
             <h1 id="sendoff-title">Happy Thanksgiving, Fisk Bulldogs!</h1>
             <p>You followed every clue and brought the showcase back online. We hope you get some good food, real rest, and time with the people who make you feel at home.</p>
             <p><strong>Good luck on your finals.</strong> Take them one problem at a time, and remember you’ve got a community cheering for you.</p>
@@ -31,8 +31,8 @@ export function Epilogue({ cleared, mapUrl, artUrl }: { cleared: number; mapUrl:
         </>
       ) : (
         <div className="stage-lock">
-          <h1 id="sendoff-title">E-Board message sealed</h1>
-          <p className="mt-2 text-muted">You’ve found {cleared} of {messageWords.length} message pieces. Clear all ten campaign stages to open the final note.</p>
+          <h1 id="sendoff-title">The Final Surprise is locked</h1>
+          <p className="mt-2 text-muted">You’ve found {cleared} of {messageWords.length} message pieces. Clear all ten campaign stages to unlock the bonus level.</p>
         </div>
       )}
     </section>

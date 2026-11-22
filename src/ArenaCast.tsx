@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import { crewCases, crewNames, type CrewId } from './crew-story.ts'
 
+import { mascotHints } from './mascot-hints.ts'
+
 const tasks: Readonly<Partial<Record<number, { nia: string; miles: string }>>> = {
   1: { nia: 'Overnight handoff', miles: 'Path check' },
   2: { nia: 'Rehearsal report', miles: 'Git repair' },
@@ -54,12 +56,13 @@ export function ArenaCast({ stage, actionCount, children }: { stage: number; act
     const responding = Boolean(actionCount && scene?.action.speaker === id && tap?.atAction !== actionCount)
     const mascot = id === 'giblet' || id === 'bulldog'
     const task = id === 'nia' || id === 'miles' ? tasks[stage]?.[id] : undefined
-    const line = responding ? scene?.action.text : task ? scene?.lines[id] : undefined
+    const hint = tap && mascot ? mascotHints[stage]?.[id === 'giblet' ? 0 : 1] : undefined
+    const line = responding ? scene?.action.text : hint ?? (task ? scene?.lines[id] : undefined)
     const noise = tap && mascot && !responding ? (id === 'giblet' ? 'Gobble!' : 'Woof!') : ''
 
     return (
       <aside className="cast-station" data-station={id} aria-label={crewNames[id]}>
-        <button className="cast-member" type="button" data-sprite={id} onClick={() => {
+        <button className="cast-member" type="button" data-sprite={id} aria-label={mascot ? crewNames[id] + ' hint' : undefined} onClick={() => {
           setReactions((previous) => ({ ...previous, [id]: { count: (previous[id]?.count ?? 0) + 1, atAction: actionCount } }))
           if (mascot) void playMascotSound(id).catch(() => {})
         }}>

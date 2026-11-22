@@ -6,7 +6,6 @@ import { chapterScenes, evidenceNotes, missionScenes } from './story.ts'
 import { HiddenSystem } from './HiddenSystem.tsx'
 import { stageStatus } from './progress.ts'
 import { CampusBackdrop } from './CampusBackdrop.tsx'
-import { TrailMascot } from './TrailMascot.tsx'
 import { EvidenceBoard } from './EvidenceBoard.tsx'
 import { ExportTimeline } from './ExportTimeline.tsx'
 import { RecoveryJobs } from './RecoveryJobs.tsx'
@@ -333,7 +332,6 @@ function App() {
           </div>
         </GamePopup>
       )}
-      <TrailMascot solvedStage={justSolved === revealedSolve && dismissedClear !== revealedSolve ? revealedSolve : null} activeStage={mission && (stageStatus(mission.id, completed) === 'current' || (playtest && !completed.includes(mission.id))) ? mission.id : undefined} />
       <footer className="site-footer">
         <p>ColorStack at Fisk University · A fictional campus mystery</p>
         <details>

@@ -78,7 +78,7 @@ const notes: Readonly<Partial<Record<number, readonly (readonly [string, string]
     ],
     [
       "Bracket a failure",
-      "Find the last confirmed good event and the first confirmed bad one. The change happened between them."
+      "Use two observations to bound when a change could have happened."
     ]
   ],
   "6": [
@@ -124,7 +124,7 @@ const notes: Readonly<Partial<Record<number, readonly (readonly [string, string]
     ],
     [
       "Capacity",
-      "How many jobs can run at once. In this stage, two workers are available."
+      "How much work a system can handle at once."
     ]
   ],
   "9": [

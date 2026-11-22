@@ -11,6 +11,7 @@ import { EvidenceBoard } from './EvidenceBoard.tsx'
 import { ExportTimeline } from './ExportTimeline.tsx'
 import { RecoveryJobs } from './RecoveryJobs.tsx'
 import { GatewayLab } from './GatewayLab.tsx'
+import { SignalsLab } from './SignalsLab.tsx'
 import './style.css'
 
 const progressKey = 'colorstack-code-hunt:completed-stages'
@@ -130,6 +131,8 @@ function App() {
                     <ExportTimeline solved={completed.includes(3) || previewSolved === 3} onSolve={() => recordSolve(3)} />
                   ) : mission.id === 4 ? (
                     <GatewayLab solved={completed.includes(4) || previewSolved === 4} onSolve={() => recordSolve(4)} />
+                  ) : mission.id === 5 ? (
+                    <SignalsLab solved={completed.includes(5) || previewSolved === 5} onSolve={() => recordSolve(5)} />
                   ) : mission.id === 8 ? (
                     <RecoveryJobs solved={completed.includes(8) || previewSolved === 8} onSolve={() => recordSolve(8)} />
                   ) : (

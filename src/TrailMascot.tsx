@@ -5,6 +5,7 @@ const hints: Readonly<Partial<Record<number, [string, string]>>> = {
   2: ['Test the report first. Which requirement actually fails?', 'Use git show to inspect the commit that touched the status list. A change to sorting or the title cannot restore missing jobs.'],
   3: ['Compare the keys the query returns in each run. Which one is the exporter trying to read?', 'Use the key both runs provide. Then compare their working directories and point the exporter to the full path the dashboard watches.'],
   4: ['The first sync makes several fields look identical. Compare the retry against the dispatch notes.', 'Follow D-41 across the retry, then check which list clears at closeout. Use the dispatch notes to interpret K2 and Q7.'],
+  5: ['Filter for the run ID from the rehearsal note. Several events share the same time window.', 'Only dashboard records prove what viewers saw. Find the latest complete view before the earliest incomplete one.'],
   8: ['Find the job with no prerequisite. It should go first.', 'The export needs a mounted snapshot, and the dashboard needs an exported report.'],
 }
 

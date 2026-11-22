@@ -276,3 +276,11 @@ body { background: #131d31; }
 .gateway-pair code { color: #e4edff; font-size: .82rem; }
 .gateway-pair span { color: var(--color-gold); }
 .gateway-pair select { min-width: 0; width: 100%; padding: .55rem .4rem; border: 1px solid #587098; border-radius: .4rem; color: var(--color-ink); background: #111e33; font-size: .88rem; }
+
+.signals-pins { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--color-line); }
+.signals-list { display: grid; gap: .45rem; margin-top: .8rem; max-height: 30rem; overflow: auto; }
+.signals-list li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .45rem .7rem; align-items: center; padding: .55rem .65rem; border: 1px solid var(--color-line); border-radius: .55rem; background: #223552; }
+.signals-list time { font: 600 .8rem var(--font-mono); color: var(--color-gold); }
+.signals-list strong, .signals-list small { display: block; }
+.signals-list small { color: var(--color-muted); }
+.signals-list .filter { padding-inline: .55rem; font-size: .8rem; }

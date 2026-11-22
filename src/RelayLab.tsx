@@ -39,7 +39,7 @@ export function RelayLab({ solved, onSolve }: { solved: boolean; onSolve: () => 
           <button className="lab-primary justify-self-start">Replay the exchange</button>
         </form>
         <div role="status" className="mt-4 grid gap-2">
-          {results?.map(({ label, passed, detail }) => <div key={label}><strong className={passed ? 'lab-pass' : 'lab-fail'}>{passed ? 'PASS' : 'FAIL'} · {label}</strong><p className="text-sm text-muted">{detail}</p></div>)}
+          {results?.map(({ label, passed, detail }) => <div key={label}><strong className={passed ? 'lab-pass' : 'lab-fail'}>{passed ? 'PASS' : 'FAIL'} · {label}</strong><pre className="mt-1 whitespace-pre-wrap text-sm text-muted">{detail}</pre></div>)}
         </div>
       </div>
     </section>
